@@ -13,6 +13,11 @@ class db_operations():
         self.cursor = self.conn.cursor()
         print("Connection made...")
 
+    #destructor that close connection to database
+    def destructor(self):
+        self.connection.close()
+        print("connection closed...")
+
     def create_database_tables(self):
         # Creates movies table with movieID as Primary Key
         query = '''

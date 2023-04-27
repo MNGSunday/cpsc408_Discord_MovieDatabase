@@ -17,7 +17,7 @@ class db_operations():
         # Creates movies table with movieID as Primary Key
         query = '''
         CREATE TABLE Movies(
-            movieID INT NOT NULL PRIMARY KEY,
+            movieID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(50) NOT NULL,
             runtime INT,
             budget INT,
@@ -26,8 +26,9 @@ class db_operations():
             viewerScore INT,
             genre VARCHAR(25),
             year INT,
-            nominatedForAward BOOLEAN,
-            pSafeRating VARCHAR(50)
+            nominatedForAward BOOLEAN DEFAULT false,
+            pSafeRating VARCHAR(50),
+            CONSTRAINT CHK_Movie CHECK (runtime > 0 AND budget > 0 AND year >= 1895 AND year < 3000)
         );
         '''
         self.cursor.execute(query)
@@ -35,11 +36,12 @@ class db_operations():
         # Creates actors table with actorID as Primary Key
         query2 = '''
         CREATE TABLE Actors(
-            actorID INT NOT NULL PRIMARY KEY,
+            actorID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(50) NOT NULL,
             age INT,
             hotness INT,
-            date VARCHAR(25)
+            date VARCHAR(25),
+            CONSTRAINT CHK_Actor CHECK (age > 0)
         );
         '''
         self.cursor.execute(query2)
@@ -47,7 +49,7 @@ class db_operations():
         # Creates MovieActor table with actorID and movieID as the composite Primary key
         query3 = '''
         CREATE TABLE MovieActors(
-            PRIMARY KEY (actorID, movieID) NOT NULL,
+            PRIMARY KEY (actorID, movieID) INT NOT NULL,
             wasLead BOOLEAN
         );
         '''
@@ -56,9 +58,10 @@ class db_operations():
         # Creates Directors table with directorID
         query4 = '''
         CREATE TABLE Directors(
-            directorID INT NOT NULL PRIMARY KEY,
+            directorID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(30) NOT NULL,
-            age INT
+            age INT,
+            CONSTRAINT CHK_Director CHECK (age > 0)
         );
         '''
         self.cursor.execute(query4)
@@ -66,10 +69,11 @@ class db_operations():
         # Creates Composers table with composerID as the Primary key
         query5 = '''
         CREATE TABLE Composers(
-            composerID INT NOT NULL PRIMARY KEY,
+            composerID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(30) NOT NULL,
             age INT,
-            movieCount INT
+            movieCount INT,
+            CONSTRAINT CHK_Composer CHECK (age > 0)
         );
         '''
         self.cursor.execute(query5)
@@ -77,12 +81,13 @@ class db_operations():
         # Creates Songs table with songID as the Primary key
         query6 = '''
         CREATE TABLE Songs(
-            songID INT NOT NULL PRIMARY KEY,
+            songID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             songName VARCHAR(50) NOT NULL,
             FOREIGN KEY (composerID) REFERENCES Composers(composerID),
             FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             songLength INT,
-            ConnorsIncrediblyProfessionalAndPurelyObjectiveRating VARCHAR(30)
+            ConnorsIncrediblyProfessionalAndPurelyObjectiveRating VARCHAR(30),
+            CONSTRAINT CHK_Song CHECK (songLength > 0)
         );
         '''
         self.cursor.execute(query6)
@@ -90,7 +95,7 @@ class db_operations():
         # Creates Studios table with studioID as the Primary key
         query7 = '''
         CREATE TABLE Songs(
-            studioID INT NOT NULL PRIMARY KEY,
+            studioID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(50) NOT NULL,
             location VARCHAR(50)
         );
@@ -100,11 +105,12 @@ class db_operations():
         # Creates Reviews table with reviewID as the Primary key
         query8 = '''
         CREATE TABLE Reviews(
-            reviewID INT NOT NULL PRIMARY KEY,
+            reviewID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             username VARCHAR(50) NOT NULL,
             FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             score INT NOT NULL,
-            text VARCHAR(300)
+            text VARCHAR(300),
+            CONSTRAINT CHK_Score CHECK (score >= 0 AND score <= 11)
         );
         '''
         self.cursor.execute(query8)

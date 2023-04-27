@@ -1,0 +1,6 @@
+MovieID,Name,Runtime,Budget,GrossProfit,CriticScore,ViewerScore,Genre,Year,NominatedForAward,PSafeRating
+1,Cars 2,106,"200,000,000","599,000,000",40,49,War/Comedy,2011,TRUE,Borderline Banned
+2,Inglourious Basterds,153,"70,000,000","321,400,000",89,88,War/Comedy,2009,TRUE,NOTSAFE NOTSAFE NOTSAFE
+3,Bee Movie,91,"150,000,000","293,500,000",49,53,Kids & Family,2007,FALSE,Bzzzzz
+4,Solo: A Star Wars Story,135,"275,000,000","393,200,000",69,63,Sci-Fi/Adventure,2018,TRUE,Rebel Scum
+5,Whiplash,107,"3,300,000","49,000,000",94,94,Drama/Music,2014,TRUE,*Angry Drum Sounds*

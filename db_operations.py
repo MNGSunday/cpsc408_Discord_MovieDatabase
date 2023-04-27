@@ -14,86 +14,162 @@ class db_operations():
         print("Connection made...")
 
     def create_database_tables(self):
-        # Creates rider table with riderID as Primary Key
+        # Creates movies table with movieID as Primary Key
         query = '''
-        CREATE TABLE Riders(
-            riderID VARCHAR(22) NOT NULL PRIMARY KEY
+        CREATE TABLE Movies(
+            movieID INT NOT NULL PRIMARY KEY,
+            name VARCHAR(50) NOT NULL,
+            runtime INT,
+            budget INT,
+            grossProfit INT,
+            criticScore INT,
+            viewerScore INT,
+            genre VARCHAR(25),
+            year INT,
+            nominatedForAward BOOLEAN,
+            pSafeRating VARCHAR(50)
         );
         '''
         self.cursor.execute(query)
 
-        # Creates driver table with driverID as Primary Key
+        # Creates actors table with actorID as Primary Key
         query2 = '''
-        CREATE TABLE Drivers(
-            driverID VARCHAR(22) NOT NULL PRIMARY KEY,
-            driverRating DOUBLE,
-            driverMode VARCHAR(20)
+        CREATE TABLE Actors(
+            actorID INT NOT NULL PRIMARY KEY,
+            name VARCHAR(50) NOT NULL,
+            age INT,
+            hotness INT,
+            date VARCHAR(25)
         );
         '''
         self.cursor.execute(query2)
 
-        # Creates ride table with rideID as Primary key and both driverID and riderID as Foreign Keys
+        # Creates MovieActor table with actorID and movieID as the composite Primary key
         query3 = '''
-        CREATE TABLE Rides(
-            rideID VARCHAR(22) NOT NULL PRIMARY KEY,
-            driverID VARCHAR(22) NOT NULL REFERENCES Drivers(driverID),
-            riderID VARCHAR(22) NOT NULL REFERENCES Riders(riderID),
-            pickupLocation VARCHAR(40),
-            dropoffLocation VARCHAR(40),
-            FOREIGN KEY (driverID) REFERENCES Drivers(driverID),
-            FOREIGN KEY (riderID) REFERENCES Riders(riderID)
+        CREATE TABLE MovieActors(
+            PRIMARY KEY (actorID, movieID) NOT NULL,
+            wasLead BOOLEAN
         );
         '''
         self.cursor.execute(query3)
 
-        print("Tables Created")
+        # Creates Directors table with directorID
+        query4 = '''
+        CREATE TABLE Directors(
+            directorID INT NOT NULL PRIMARY KEY,
+            name VARCHAR(30) NOT NULL,
+            age INT
+        );
+        '''
+        self.cursor.execute(query4)
 
-    # function to retrieve a single value from a table
-    def single_record(self, query):
+        # Creates Composers table with composerID as the Primary key
+        query5 = '''
+        CREATE TABLE Composers(
+            composerID INT NOT NULL PRIMARY KEY,
+            name VARCHAR(30) NOT NULL,
+            age INT,
+            movieCount INT
+        );
+        '''
+        self.cursor.execute(query5)
+
+        # Creates Songs table with songID as the Primary key
+        query6 = '''
+        CREATE TABLE Songs(
+            songID INT NOT NULL PRIMARY KEY,
+            songName VARCHAR(50) NOT NULL,
+            FOREIGN KEY (composerID) REFERENCES Composers(composerID),
+            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
+            songLength INT,
+            ConnorsIncrediblyProfessionalAndPurelyObjectiveRating VARCHAR(30)
+        );
+        '''
+        self.cursor.execute(query6)
+
+        # Creates Studios table with studioID as the Primary key
+        query7 = '''
+        CREATE TABLE Songs(
+            studioID INT NOT NULL PRIMARY KEY,
+            name VARCHAR(50) NOT NULL,
+            location VARCHAR(50)
+        );
+        '''
+        self.cursor.execute(query7)
+
+        # Creates Reviews table with reviewID as the Primary key
+        query8 = '''
+        CREATE TABLE Reviews(
+            reviewID INT NOT NULL PRIMARY KEY,
+            username VARCHAR(50) NOT NULL,
+            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
+            score INT NOT NULL,
+            text VARCHAR(300)
+        );
+        '''
+        self.cursor.execute(query8)
+
+        print("Tables Created!")
+
+   #we want cursor to run query and return value of the cell when I run it
+    def single_record(self,query):
         self.cursor.execute(query)
-        return self.cursor.fetchone()[0]
+        return self.cursor.fetchone() [0] #fetchone() returns first row of query, [0] returns first cell of that row
+        #can give us just the value of the COUNT(*)
 
-    # function to bulk insert records
-    def bulk_insert(self, query, records):
-        self.cursor.executemany(query, records)
+    #we want cursor to run query and return value of the cell when I run it
+    def whole_record(self,query):
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def insert_single_record(self,query):
+        self.cursor.execute(query)
         self.connection.commit()
-        print("query executed...")
 
-    # function for updating records
-    def update(self,query):
-        self.cursor.execute(query)
+    #function to bulk insert records
+    #runs query for each record in "records"
+    def bulk_insert(self,query,records):
+        self.cursor.executemany(query,records)
         self.connection.commit()
-        print("query executed..")
+        print("query bulk executed...")
 
-    # function that returns the values of a single attribute
-    def single_attribute(self, query):
-        self.cursor.execute(query)
-        results = self.cursor.fetchall()
-        results = [i[0] for i in results]
-        results.remove(None)
+    #function that returns values of a single attribute
+    def single_attribute(self,query):
+        self.cursor.execute(query)  #results of query in the cursor
+        results = self.cursor.fetchall() #fetchall() returns all rows of query in a 2d array with a bunch of arrays of length 1
+        results = [i[0] for i in results]   #for everything in results make it equal to the first cell of that row and add it to results
+        if("None" in results):
+            results.remove("None")    #remove None values
         return results
-    
+
     def name_placeholder_query(self, query, dictionary):
         self.cursor.execute(query, dictionary)
+        results = self.cursor.fetchall() #fetchall() returns all rows of query in a 2d array with a bunch of arrays of length 1
+        results = [i[0] for i in results]   #for everything in results make it equal to the first cell of that row and add it to results
+        return results
+    
+    def name_placeholder_query2(self, query, dictionary):
+        self.cursor.execute(query, dictionary)
         results = self.cursor.fetchall()
-        results = [i[0] for i in results]
+        return results
+    
+    def update_record(self, query, dictionary):
+        self.cursor.execute(query, dictionary)
+        self.connection.commit()
+        print("update query executed...")
+
+    def update_record2(self, query):
+        self.cursor.execute(query)
+        self.connection.commit()
+        print("update query executed...")
+
+    #uses a named placeholder query to return all values in each row
+    def name_placeholder_query_all_values(self, query, dictionary):
+        self.cursor.execute(query, dictionary)
+        results = self.cursor.fetchall()
         return results
 
-    # function that retrieves a single tuple
-    def single_tuple(self, query):
-        self.cursor.execute(query)
-        return self.cursor.fetchone()
-
-    # function to update table
-    def update_table(self, update_query, new_data):
-        self.cursor.executemany(update_query, new_data)
+    def delete_record(self, query, dictionary):
+        self.cursor.execute(query, dictionary)
         self.connection.commit()
-
-    # function to delete row from table
-    def delete_entry(self, delete_query):
-        self.cursor.execute(delete_query)
-        self.connection.commit()
-
-    # destructor that closes connection to database
-    def destructor(self):
-        self.connection.close()
+        print("delete query executed...")

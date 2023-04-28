@@ -17,7 +17,7 @@ class db_operations():
 
     #destructor that close connection to database
     def destructor(self):
-        self.connection.close()
+        self.conn.close()
         print("connection closed...")
 
     def create_database_tables(self):
@@ -207,13 +207,13 @@ class db_operations():
 
     def insert_single_record(self,query):
         self.cursor.execute(query)
-        self.connection.commit()
+        self.conn.commit()
 
     #function to bulk insert records
     #runs query for each record in "records"
     def bulk_insert(self,query,records):
         self.cursor.executemany(query,records)
-        self.connection.commit()
+        self.conn.commit()
         print("query bulk executed...")
 
     #function that returns values of a single attribute
@@ -238,12 +238,12 @@ class db_operations():
     
     def update_record(self, query, dictionary):
         self.cursor.execute(query, dictionary)
-        self.connection.commit()
+        self.conn.commit()
         print("update query executed...")
 
     def update_record2(self, query):
         self.cursor.execute(query)
-        self.connection.commit()
+        self.conn.commit()
         print("update query executed...")
 
     #uses a named placeholder query to return all values in each row
@@ -259,5 +259,5 @@ class db_operations():
 
     def delete_record(self, query, dictionary):
         self.cursor.execute(query, dictionary)
-        self.connection.commit()
+        self.conn.commit()
         print("delete query executed...")

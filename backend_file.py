@@ -10,15 +10,16 @@ db_ops = db_operations()
 # Code for initializing the data from the csv files
 
 # Clean the sample data files 
-#NOTE: Might need to get rid of the header row for each file??? Not sure if that will be an issue
-movies_data = pd.read_csv("Test_Data/Movies-TestData.csv")
-actors_data = pd.read_csv("Test_Data/Actors-TestData.csv")
-movieActors_data = pd.read_csv("Test_Data/MovieActor-TestData.csv")
-directors_data = pd.read_csv("Test_Data/Directors-TestData.csv")
-composers_data = pd.read_csv("Test_Data/Composers-TestData.csv")
-songs_data = pd.read_csv("Test_Data/Songs-TestData.csv")
-studios_data = pd.read_csv("Test_Data/Studios-TestData.csv")
-reviews_data = pd.read_csv("Test_Data/Reviews-TestData.csv")
+test_data = {
+    "Movies": pd.read_csv("Test_Data/Movies-TestData.csv"),
+    "Actors": pd.read_csv("Test_Data/Actors-TestData.csv"),
+    "MovieActors": pd.read_csv("Test_Data/MovieActor-TestData.csv"),
+    "Directors": pd.read_csv("Test_Data/Directors-TestData.csv"),
+    "Composers": pd.read_csv("Test_Data/Composers-TestData.csv"),
+    "Songs": pd.read_csv("Test_Data/Songs-TestData.csv"),
+    "Studios": pd.read_csv("Test_Data/Studios-TestData.csv"),
+    "Reviews": pd.read_csv("Test_Data/Reviews-TestData.csv")
+}
 
 # Create the database's tables
 db_ops.create_database_tables()
@@ -26,54 +27,12 @@ db_ops.create_database_tables()
 
 #Populates all 8 tables with given sample data
 def populate_with_sample_data():
-    # insert the data from the csv files
-    attribute_count = len(movies_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Movies VALUES(" + placeholders + ")"
-    movies_bulk_data = list(movies_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, movies_bulk_data)
-
-    attribute_count = len(actors_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Actors VALUES(" + placeholders + ")"
-    actors_bulk_data = list(actors_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, actors_bulk_data)
-
-    attribute_count = len(movieActors_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO MovieActors VALUES(" + placeholders + ")"
-    movieActors_bulk_data = list(movieActors_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, movieActors_bulk_data)
-
-    attribute_count = len(directors_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Directors VALUES(" + placeholders + ")"
-    directors_bulk_data = list(directors_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, directors_bulk_data)
-
-    attribute_count = len(composers_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Composers VALUES(" + placeholders + ")"
-    composers_bulk_data = list(composers_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, composers_bulk_data)
-
-    attribute_count = len(songs_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Songs VALUES(" + placeholders + ")"
-    songs_bulk_data = list(songs_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, songs_bulk_data)    
-
-    attribute_count = len(studios_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Studios VALUES(" + placeholders + ")"
-    studios_bulk_data = list(studios_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, studios_bulk_data)  
-
-    attribute_count = len(reviews_data.columns)
-    placeholders = ("%s," * attribute_count)[:-1]
-    query = "INSERT INTO Reviews VALUES(" + placeholders + ")"
-    reviews_bulk_data = list(reviews_data.itertuples(index=False, name=None))
-    db_ops.bulk_insert(query, reviews_bulk_data)  
+    for table_name, data_df in test_data.items():
+        attribute_count = len(data_df.columns)
+        placeholders = ("%s," * attribute_count)[:-1]
+        query = f"INSERT INTO {table_name} VALUES({placeholders})"
+        bulk_data = list(data_df.itertuples(index=False, name=None))
+        db_ops.bulk_insert(query, bulk_data)
 
     print("Sample data has been inserted correctly")
 

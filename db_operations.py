@@ -56,8 +56,10 @@ class db_operations():
         # Creates MovieActor table with actorID and movieID as the composite Primary key
         query3 = '''
         CREATE TABLE MovieActors(
-            PRIMARY KEY (actorID, movieID) INT NOT NULL,
-            wasLead BOOLEAN
+            actorID INT NOT NULL,
+            movieID INT NOT NULL,
+            wasLead BOOLEAN,
+            PRIMARY KEY (actorID, movieID)
         );
         '''
         self.cursor.execute(query3)
@@ -90,10 +92,12 @@ class db_operations():
         CREATE TABLE Songs(
             songID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             songName VARCHAR(50) NOT NULL,
-            FOREIGN KEY (composerID) REFERENCES Composers(composerID),
-            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
+            composerID INT NOT NULL,
+            movieID INT NOT NULL,
             songLength INT,
             ConnorsIncrediblyProfessionalAndPurelyObjectiveRating VARCHAR(30),
+            FOREIGN KEY (composerID) REFERENCES Composers(composerID),
+            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             CONSTRAINT CHK_Song CHECK (songLength > 0)
         );
         '''
@@ -114,9 +118,10 @@ class db_operations():
         CREATE TABLE Reviews(
             reviewID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             username VARCHAR(50) NOT NULL,
-            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
+            movieID INT NOT NULL,
             score INT NOT NULL,
             text VARCHAR(300),
+            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             CONSTRAINT CHK_Score CHECK (score >= 0 AND score <= 11)
         );
         '''

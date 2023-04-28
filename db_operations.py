@@ -8,10 +8,12 @@ class db_operations():
                                user="root",
                                password="cpsc408",
                                auth_plugin='mysqlnative_password',
-                               database="RideShare"
+                               database="MovieBot"
                                )
         self.cursor = self.conn.cursor()
         print("Connection made...")
+
+        self.cursor.execute("CREATE SCHEMA IF NOT EXISTS MovieBot;")
 
     #destructor that close connection to database
     def destructor(self):

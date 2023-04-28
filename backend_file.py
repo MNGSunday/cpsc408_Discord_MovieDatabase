@@ -150,5 +150,8 @@ def print_table():
 
 
 # MAIN CODE:
-populate_with_sample_data()
+try:
+    populate_with_sample_data()
+except:
+    print("Proceeding as usual...")
 db_ops.destructor()

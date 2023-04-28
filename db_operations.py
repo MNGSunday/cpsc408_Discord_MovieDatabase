@@ -182,6 +182,11 @@ class db_operations():
         results = self.cursor.fetchall()
         return results
 
+    # uses a complete query statement to return all values in each row
+    def query_all_values(self, query):
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+
     def delete_record(self, query, dictionary):
         self.cursor.execute(query, dictionary)
         self.connection.commit()

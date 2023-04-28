@@ -92,61 +92,63 @@ def print_table():
     if table_choice == 1:
         query = '''
         SELECT *
-        FROM movies
+        FROM Movies
         ORDER BY RAND()
         '''
     if table_choice == 2:
         query = '''
         SELECT *
-        FROM actors
+        FROM Actors
         ORDER BY RAND()
         '''
     if table_choice == 3:
         query = '''
         SELECT *
-        FROM movieActor
+        FROM MovieActor
         ORDER BY RAND()
         '''
     if table_choice == 4:
         query = '''
         SELECT *
-        FROM directors
+        FROM Directors
         ORDER BY RAND()
         '''
     if table_choice == 5:
         query = '''
         SELECT *
-        FROM composers
+        FROM Composers
         ORDER BY RAND()
         '''
     if table_choice == 6:
         query = '''
         SELECT *
-        FROM songs
+        FROM Songs
         ORDER BY RAND()
         '''
     if table_choice == 7:
         query = '''
         SELECT *
-        FROM studios
+        FROM Studios
         ORDER BY RAND()
         '''
     if table_choice == 8:
         query = '''
         SELECT *
-        FROM reviews
+        FROM Reviews
         ORDER BY RAND()
         '''
 
+    # If user requested to view only a certain amount of results
     if number != 0:
         query += "LIMIT:lim"
         dict = {}
         dict["lim"] = number
         results = db_ops.name_placeholder_query(query, dict)
         helper.pretty_print(results)
+    # If user wanted to view all results
     else:
-        # implement variation of fetchall without need for dictionary
-        print("WIP")
+        results = db_ops.query_all_values(query)
+        helper.pretty_print(results)
 
 
 # MAIN CODE:

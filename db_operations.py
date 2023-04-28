@@ -256,6 +256,7 @@ class db_operations():
     def query_all_values(self, query):
         self.cursor.execute(query)
         results = self.cursor.fetchall()
+        return results
 
     def delete_record(self, query, dictionary):
         self.cursor.execute(query, dictionary)

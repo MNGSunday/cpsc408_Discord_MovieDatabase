@@ -104,7 +104,7 @@ def print_table():
     if table_choice == 3:
         query = '''
         SELECT *
-        FROM MovieActor
+        FROM MovieActors
         ORDER BY RAND()
         '''
     if table_choice == 4:

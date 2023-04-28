@@ -101,7 +101,7 @@ class db_operations():
 
         # Creates Studios table with studioID as the Primary key
         query7 = '''
-        CREATE TABLE Songs(
+        CREATE TABLE Studios(
             studioID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(50) NOT NULL,
             location VARCHAR(50)
@@ -121,6 +121,71 @@ class db_operations():
         );
         '''
         self.cursor.execute(query8)
+
+        query9 = '''
+        CREATE TABLE movies_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query9)
+
+        query10 = '''
+        CREATE TABLE actors_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query10)
+
+        query11 = '''
+        CREATE TABLE movieactors_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query11)
+
+        query12 = '''
+        CREATE TABLE directors_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query12)
+
+
+        query13 = '''
+        CREATE TABLE composers_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query13)
+
+        query14 = '''
+        CREATE TABLE songs_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query14)
+
+        query15 = '''
+        CREATE TABLE studios_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query15)
+
+        query16 = '''
+        CREATE TABLE reviews_log(
+        user VARCHAR(50),
+        action VARCHAR(250)
+        );
+        '''
+        self.cursor.execute(query16)
 
         print("Tables Created!")
 

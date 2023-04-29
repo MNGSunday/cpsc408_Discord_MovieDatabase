@@ -125,10 +125,9 @@ def filter_menu():
         3 - Directors
         4 - Composers
         5 - Songs
-        6 - Studios
-        7 - Reviews
+        6 - Reviews
         ''')
-    table_choice = helper.get_choice([1,2,3,4,5,6,7])
+    table_choice = helper.get_choice([1,2,3,4,5,6])
 
     # Optional limit to how many entries user views
     print("How many entries would you like returned?")
@@ -143,6 +142,10 @@ def filter_menu():
         filter_directors(number)
     if table_choice == 4:
         filter_composers(number)
+    if table_choice == 5:
+        filter_songs(number)
+    if table_choice == 6:
+        filter_reviews(number)
 
 # Filtering options for Movies, variable entry_choice is the number of entries that the user wants returned
 def filter_movies(entry_choice):
@@ -439,6 +442,74 @@ def filter_songs(entry_choice):
     else:
         results = db_ops.query_all_values(query)
         helper.pretty_print(results)
+
+# Filtering options for Reviews, variable entry_choice is the number of entries that the user wants returned
+def filter_reviews(entry_choice):
+    print('''You have the following options for filtering Songs:
+    1 - Find reviews by Movie Name
+    2 - Find Movie reviews scoring > 7.5 on a scale of 0 to 11
+    3 - Find Movie reviews scoring < 7.5 on a scale of 0 to 11
+    ''')
+    filter_choice = helper.get_choice([1,2,3])
+
+    if filter_choice == 1:
+        name_query = '''
+        SELECT DISTINCT name
+        FROM Movies;
+        '''
+        # Show user movie names in database, then get their input
+        print("Names from Movie database: ")
+        names = db_ops.single_attribute(name_query)
+
+        choices = {}
+        for i in range(len(names)):
+            print(i, names[i])
+            choices[i] = names[i]
+        name_index = helper.get_choice(choices.keys())
+
+        query = '''
+        SELECT Movies.name, Reviews.username, Reviews.text
+        FROM Reviews
+        INNER JOIN Movies ON Movies.movieID = Reviews.movieID
+        WHERE Movies.name =:selection
+        ORDER BY RANDOM()
+        '''
+        dictionary = {"selection":choices[name_index]}
+        # User wanted only 1 or 5 results
+        if entry_choice != 0:
+            query += "LIMIT:lim"
+            dictionary["lim"] = entry_choice
+        results = db_ops.name_placeholder_query(query, dictionary)
+        helper.pretty_print(results)
+    
+    else:
+        if filter_choice == 2:
+            query = '''
+            SELECT Movies.name, Reviews.username, Reviews.text
+            FROM Reviews
+            INNER JOIN Movies ON Movies.movieID = Reviews.movieID
+            WHERE Reviews.score > 7.5
+            ORDER BY RANDOM()
+            '''
+        else:
+            query = '''
+            SELECT Movies.name, Reviews.username, Reviews.text
+            FROM Reviews
+            INNER JOIN Movies ON Movies.movieID = Reviews.movieID
+            WHERE Reviews.score < 7.5
+            ORDER BY RANDOM()
+            '''
+        # User wanted only 1 or 5 results
+        if entry_choice != 0:
+            query += "LIMIT:lim"
+            dict = {}
+            dict["lim"] = entry_choice
+            results = db_ops.name_placeholder_query(query, dict)
+            helper.pretty_print(results)
+        else:
+            results = db_ops.query_all_values(query)
+            helper.pretty_print(results)        
+
 
 # MAIN CODE:
 populate_with_sample_data()

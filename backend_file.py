@@ -137,10 +137,12 @@ def filter_menu():
     number = helper.get_choice([1,5,0])
 
     if table_choice == 1:
-        filter_movie_menu(number)
+        filter_movies(number)
+    if table_choice == 2:
+        filter_actors(number)
 
-# Filtering options for Movie, variable entry_choice is the number of entries that the user wants returned
-def filter_movie_menu(entry_choice):
+# Filtering options for Movies, variable entry_choice is the number of entries that the user wants returned
+def filter_movies(entry_choice):
     print("What would you like to filter results by: Genre, Budget, Average CriticScore, or Average ViewerScore?")
     filter_choice = helper.get_choice_string(["Genre", "Budget", "Average CriticScore", "Average ViewerScore"])
 
@@ -161,7 +163,7 @@ def filter_movie_menu(entry_choice):
         index = helper.get_choice(choices.keys())
 
         query = '''
-        SELECT DISTINCT name
+        SELECT name
         FROM Movies
         WHERE genre =:selection
         ORDER BY RANDOM()
@@ -184,14 +186,14 @@ def filter_movie_menu(entry_choice):
 
         if budget_choice == 1:
             query = '''
-            SELECT DISTINCT name
+            SELECT name
             FROM Movies
             WHERE budget > 100000000
             ORDER BY RANDOM()
             '''
         else:
             query = '''
-            SELECT DISTINCT name
+            SELECT name
             FROM Movies
             WHERE budget < 100000000
             ORDER BY RANDOM()
@@ -217,14 +219,14 @@ def filter_movie_menu(entry_choice):
 
         if critic_choice == 1:
             query = '''
-            SELECT DISTINCT name
+            SELECT name
             FROM Movies
             WHERE criticScore > 65
             ORDER BY RANDOM()
             '''
         else:
             query = '''
-            SELECT DISTINCT name
+            SELECT name
             FROM Movies
             WHERE criticScore < 65
             ORDER BY RANDOM()
@@ -250,14 +252,14 @@ def filter_movie_menu(entry_choice):
 
         if viewer_choice == 1:
             query = '''
-            SELECT DISTINCT name
+            SELECT name
             FROM Movies
             WHERE viewerScore > 65
             ORDER BY RANDOM()
             '''
         else:
             query = '''
-            SELECT DISTINCT name
+            SELECT name
             FROM Movies
             WHERE viewerScore < 65
             ORDER BY RANDOM()
@@ -272,7 +274,46 @@ def filter_movie_menu(entry_choice):
         else:
             results = db_ops.query_all_values(query)
             helper.pretty_print(results)
-    
+# Filtering options for Actors, variable entry_choice is the number of entries that the user wants returned
+def filter_actors(entry_choice):
+    print('''You have the following options for filtering Actors:
+    1 - Actors under 65
+    2 - Actors over 65
+    3 - Youngest to Oldest
+    ''')
+    filter_choice = helper.get_choice([1,2,3])
+    if filter_choice == 1:
+        query = '''
+        SELECT name
+        FROM Actors
+        WHERE age < 65
+        ORDER BY RANDOM()
+        '''
+    elif filter_choice == 2:
+        query = '''
+        SELECT name
+        FROM Actors
+        WHERE age > 65
+        ORDER BY RANDOM()
+        '''
+    else:
+        query = '''
+        SELECT name
+        FROM Actors
+        ORDER BY age DESC
+        '''
+
+    # User wanted only 1 or 5 results
+    if entry_choice != 0:
+        query += "LIMIT:lim"
+        dict = {}
+        dict["lim"] = entry_choice
+        results = db_ops.name_placeholder_query(query, dict)
+        helper.pretty_print(results)
+    else:
+        results = db_ops.query_all_values(query)
+        helper.pretty_print(results)
+
 # MAIN CODE:
 populate_with_sample_data()
 

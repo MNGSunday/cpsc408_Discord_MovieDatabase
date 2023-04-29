@@ -119,17 +119,16 @@ def print_table():
 
 # Filtering options menu
 def filter_menu():
-    print('''Which table would you like to read records from?
+    print('''Which table would you like to read filtered records from?
         1 - Movies
         2 - Actors
-        3 - MovieActors
-        4 - Directors
-        5 - Composers
-        6 - Songs
-        7 - Studios
-        8 - Reviews
+        3 - Directors
+        4 - Composers
+        5 - Songs
+        6 - Studios
+        7 - Reviews
         ''')
-    table_choice = helper.get_choice([1,2,3,4,5,6,7,8])
+    table_choice = helper.get_choice([1,2,3,4,5,6,7])
 
     # Optional limit to how many entries user views
     print("How many entries would you like returned?")
@@ -140,6 +139,10 @@ def filter_menu():
         filter_movies(number)
     if table_choice == 2:
         filter_actors(number)
+    if table_choice == 3:
+        filter_directors(number)
+    if table_choice == 4:
+        filter_composers(number)
 
 # Filtering options for Movies, variable entry_choice is the number of entries that the user wants returned
 def filter_movies(entry_choice):
@@ -301,6 +304,95 @@ def filter_actors(entry_choice):
         SELECT name
         FROM Actors
         ORDER BY age DESC
+        '''
+
+    # User wanted only 1 or 5 results
+    if entry_choice != 0:
+        query += "LIMIT:lim"
+        dict = {}
+        dict["lim"] = entry_choice
+        results = db_ops.name_placeholder_query(query, dict)
+        helper.pretty_print(results)
+    else:
+        results = db_ops.query_all_values(query)
+        helper.pretty_print(results)
+
+# Filtering options for Directors, variable entry_choice is the number of entries that the user wants returned
+def filter_directors(entry_choice):
+    print('''You have the following options for filtering Directors:
+    1 - Directors under 65
+    2 - Directors over 65
+    3 - Youngest to Oldest
+    ''')
+    filter_choice = helper.get_choice([1,2,3])
+    if filter_choice == 1:
+        query = '''
+        SELECT name
+        FROM Directors
+        WHERE age < 65
+        ORDER BY RANDOM()
+        '''
+    elif filter_choice == 2:
+        query = '''
+        SELECT name
+        FROM Directors
+        WHERE age > 65
+        ORDER BY RANDOM()
+        '''
+    else:
+        query = '''
+        SELECT name
+        FROM Directors
+        ORDER BY age DESC
+        '''
+
+    # User wanted only 1 or 5 results
+    if entry_choice != 0:
+        query += "LIMIT:lim"
+        dict = {}
+        dict["lim"] = entry_choice
+        results = db_ops.name_placeholder_query(query, dict)
+        helper.pretty_print(results)
+    else:
+        results = db_ops.query_all_values(query)
+        helper.pretty_print(results)
+
+# Filtering options for Composers, variable entry_choice is the number of entries that the user wants returned
+def filter_composers(entry_choice):
+    print('''You have the following options for filtering Composers:
+    1 - Composers under 65
+    2 - Composers over 65
+    3 - Composed for under 50 movies
+    4 - Composed for over 50 movies
+    ''')
+    filter_choice = helper.get_choice([1,2,3])
+    if filter_choice == 1:
+        query = '''
+        SELECT name
+        FROM Composers
+        WHERE age < 65
+        ORDER BY RANDOM()
+        '''
+    elif filter_choice == 2:
+        query = '''
+        SELECT name
+        FROM Composers
+        WHERE age > 65
+        ORDER BY RANDOM()
+        '''
+    elif filter_choice == 3:
+        query = '''
+        SELECT name
+        FROM Composers
+        WHERE movieCount < 50
+        ORDER BY RANDOM()
+        '''
+    else:
+        query = '''
+        SELECT name
+        FROM Composers
+        WHERE movieCount > 50
+        ORDER BY RANDOM()
         '''
 
     # User wanted only 1 or 5 results

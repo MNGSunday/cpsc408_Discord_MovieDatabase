@@ -41,7 +41,7 @@ def print_table():
     print('''Which table would you like to read records from?
     1 - Movies
     2 - Actors
-    3 - MovieActor
+    3 - MovieActors
     4 - Directors
     5 - Composers
     6 - Songs
@@ -117,7 +117,162 @@ def print_table():
         results = db_ops.query_all_values(query)
         helper.pretty_print(results)
 
+# Filtering options menu
+def filter_menu():
+    print('''Which table would you like to read records from?
+        1 - Movies
+        2 - Actors
+        3 - MovieActors
+        4 - Directors
+        5 - Composers
+        6 - Songs
+        7 - Studios
+        8 - Reviews
+        ''')
+    table_choice = helper.get_choice([1,2,3,4,5,6,7,8])
 
+    # Optional limit to how many entries user views
+    print("How many entries would you like returned?")
+    print("Enter 1, 5, or 0 for all entries")
+    number = helper.get_choice([1,5,0])
+
+    if table_choice == 1:
+        filter_movie_menu(number)
+
+# Filtering options for Movie, variable entry_choice is the number of entries that the user wants returned
+def filter_movie_menu(entry_choice):
+    print("What would you like to filter results by: Genre, Budget, Average CriticScore, or Average ViewerScore?")
+    filter_choice = helper.get_choice_string(["Genre", "Budget", "Average CriticScore", "Average ViewerScore"])
+
+    # User wants to filter movies by genre
+    if filter_choice == "Genre":
+        genre_query = '''
+        SELECT DISTINCT genre
+        FROM Movies;
+        '''
+        # Show user genres in database, then get their input
+        print("Genres from Movie database: ")
+        genres = db_ops.single_attribute(genre_query)
+
+        choices = {}
+        for i in range(len(genres)):
+            print(i, genres[i])
+            choices[i] = genres[i]
+        index = helper.get_choice(choices.keys())
+
+        query = '''
+        SELECT DISTINCT name
+        FROM Movies
+        WHERE genre =:selection
+        ORDER BY RANDOM()
+        '''
+        dictionary = {"selection":choices[index]}
+        # User wanted only 1 or 5 results
+        if entry_choice != 0:
+            query += "LIMIT:lim"
+            dictionary["lim"] = entry_choice
+        results = db_ops.name_placeholder_query(query, dictionary)
+        helper.pretty_print(results)
+
+    # User wants to filter movies by budget
+    if filter_choice == "Budget":
+        print('''What would you like to filter movie results by?
+        1 - Budget over 100,000,000
+        2 - Budget under 100,000,000
+        ''')
+        budget_choice = helper.get_choice([1,2])
+
+        if budget_choice == 1:
+            query = '''
+            SELECT DISTINCT name
+            FROM Movies
+            WHERE budget > 100000000
+            ORDER BY RANDOM()
+            '''
+        else:
+            query = '''
+            SELECT DISTINCT name
+            FROM Movies
+            WHERE budget < 100000000
+            ORDER BY RANDOM()
+            '''
+        # User wanted only 1 or 5 results
+        if entry_choice != 0:
+            query += "LIMIT:lim"
+            dict = {}
+            dict["lim"] = entry_choice
+            results = db_ops.name_placeholder_query(query, dict)
+            helper.pretty_print(results)
+        else:
+            results = db_ops.query_all_values(query)
+            helper.pretty_print(results)   
+
+    # User wants to filter movies by Average Critic Score
+    if filter_choice == "Average CriticScore":
+        print('''What would you like to filter movie results by?
+            1 - Average Critic Score over 65
+            2 - Average Critic Score under 65
+            ''')
+        critic_choice = helper.get_choice([1,2])
+
+        if critic_choice == 1:
+            query = '''
+            SELECT DISTINCT name
+            FROM Movies
+            WHERE criticScore > 65
+            ORDER BY RANDOM()
+            '''
+        else:
+            query = '''
+            SELECT DISTINCT name
+            FROM Movies
+            WHERE criticScore < 65
+            ORDER BY RANDOM()
+            '''
+        # User wanted only 1 or 5 results
+        if entry_choice != 0:
+            query += "LIMIT:lim"
+            dict = {}
+            dict["lim"] = entry_choice
+            results = db_ops.name_placeholder_query(query, dict)
+            helper.pretty_print(results)
+        else:
+            results = db_ops.query_all_values(query)
+            helper.pretty_print(results)
+    
+    # User wants to filter movies by Average Viewer Score
+    if filter_choice == "Average ViewerScore":
+        print('''What would you like to filter movie results by?
+            1 - Average Viewer Score over 65
+            2 - Average Viewer Score under 65
+            ''')
+        viewer_choice = helper.get_choice([1,2])
+
+        if viewer_choice == 1:
+            query = '''
+            SELECT DISTINCT name
+            FROM Movies
+            WHERE viewerScore > 65
+            ORDER BY RANDOM()
+            '''
+        else:
+            query = '''
+            SELECT DISTINCT name
+            FROM Movies
+            WHERE viewerScore < 65
+            ORDER BY RANDOM()
+            '''
+        # User wanted only 1 or 5 results
+        if entry_choice != 0:
+            query += "LIMIT:lim"
+            dict = {}
+            dict["lim"] = entry_choice
+            results = db_ops.name_placeholder_query(query, dict)
+            helper.pretty_print(results)
+        else:
+            results = db_ops.query_all_values(query)
+            helper.pretty_print(results)
+    
 # MAIN CODE:
 populate_with_sample_data()
 

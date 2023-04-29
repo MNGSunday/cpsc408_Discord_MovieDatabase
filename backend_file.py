@@ -11,13 +11,13 @@ db_ops = db_operations()
 
 # Clean the sample data files 
 test_data = {
-    "Movies": pd.read_csv("Test_Data/Movies-TestData.csv"),
     "Actors": pd.read_csv("Test_Data/Actors-TestData.csv"),
     "MovieActors": pd.read_csv("Test_Data/MovieActor-TestData.csv"),
     "Directors": pd.read_csv("Test_Data/Directors-TestData.csv"),
     "Composers": pd.read_csv("Test_Data/Composers-TestData.csv"),
-    "Songs": pd.read_csv("Test_Data/Songs-TestData.csv"),
     "Studios": pd.read_csv("Test_Data/Studios-TestData.csv"),
+    "Movies": pd.read_csv("Test_Data/Movies-TestData.csv"),
+    "Songs": pd.read_csv("Test_Data/Songs-TestData.csv"),
     "Reviews": pd.read_csv("Test_Data/Reviews-TestData.csv")
 }
 
@@ -277,6 +277,7 @@ def filter_movies(entry_choice):
         else:
             results = db_ops.query_all_values(query)
             helper.pretty_print(results)
+
 # Filtering options for Actors, variable entry_choice is the number of entries that the user wants returned
 def filter_actors(entry_choice):
     print('''You have the following options for filtering Actors:
@@ -395,6 +396,39 @@ def filter_composers(entry_choice):
         ORDER BY RANDOM()
         '''
 
+    # User wanted only 1 or 5 results
+    if entry_choice != 0:
+        query += "LIMIT:lim"
+        dict = {}
+        dict["lim"] = entry_choice
+        results = db_ops.name_placeholder_query(query, dict)
+        helper.pretty_print(results)
+    else:
+        results = db_ops.query_all_values(query)
+        helper.pretty_print(results)
+
+# Filtering options for Songs, variable entry_choice is the number of entries that the user wants returned
+def filter_songs(entry_choice):
+    print('''You have the following options for filtering Songs:
+    1 - Songs shorter than 150 seconds
+    2 - Songs longer than 150 seconds
+    ''')
+    filter_choice = helper.get_choice([1,2])
+
+    if filter_choice == 1:
+        query = '''
+        SELECT songName
+        FROM Songss
+        WHERE songLength < 150
+        ORDER BY RANDOM()
+        '''
+    else:
+        query = '''
+        SELECT songName
+        FROM Songs
+        WHERE songLength > 150
+        ORDER BY RANDOM()
+        '''
     # User wanted only 1 or 5 results
     if entry_choice != 0:
         query += "LIMIT:lim"

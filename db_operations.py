@@ -26,6 +26,9 @@ class db_operations():
         CREATE TABLE Movies(
             movieID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
             name VARCHAR(50) NOT NULL,
+            directorID INT NOT NULL,
+            composerID INT NOT NULL,
+            studioID INT NOT NULL,
             runtime INT,
             budget INT,
             grossProfit INT,
@@ -35,6 +38,9 @@ class db_operations():
             year INT,
             nominatedForAward BOOLEAN DEFAULT false,
             pSafeRating VARCHAR(50),
+            FOREIGN KEY (directorID) REFERENCES Directors(directorID),
+            FOREIGN KEY (composerID) REFERENCES Composers(composerID),
+            FOREIGN KEY (studioID) REFERENCES Studios(studioID),
             CONSTRAINT CHK_Movie CHECK (runtime > 0 AND budget > 0 AND year >= 1895 AND year < 3000)
         );
         '''

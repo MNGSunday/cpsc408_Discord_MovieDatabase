@@ -421,7 +421,7 @@ def filter_songs(entry_choice):
     if filter_choice == 1:
         query = '''
         SELECT songName
-        FROM Songss
+        FROM Songs
         WHERE songLength < 150
         ORDER BY RANDOM()
         '''

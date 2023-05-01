@@ -445,7 +445,7 @@ def filter_songs(entry_choice):
 
 # Filtering options for Reviews, variable entry_choice is the number of entries that the user wants returned
 def filter_reviews(entry_choice):
-    print('''You have the following options for filtering Songs:
+    print('''You have the following options for filtering Reviews:
     1 - Find reviews by Movie Name
     2 - Find Movie reviews scoring > 7.5 on a scale of 0 to 11
     3 - Find Movie reviews scoring < 7.5 on a scale of 0 to 11

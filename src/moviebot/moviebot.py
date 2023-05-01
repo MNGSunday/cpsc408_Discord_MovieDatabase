@@ -19,10 +19,6 @@ class MovieBot(commands.Bot):
         self._load_commands()
 
     def _load_commands(self):
-        @self.command()
-        async def test(ctx: commands.Context, table_name: str = None):
-            await ctx.send(f"Test command ran with arg: {table_name}")
-
         list_command = discord.SlashCommandGroup(
             name="list", description="Lists records of what you want to see"
         )

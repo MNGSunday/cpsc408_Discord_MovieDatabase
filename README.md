@@ -1,6 +1,15 @@
 # cpsc408_Discord_MovieDatabase
 
-## Developing discord bot
+## Developing
+
+0. Use an IDE or a text editor with a language server that gives you diagnostics
+1. Make changes
+2. Run and test your code
+3. Commit your changes
+
+**It is standard practice to test your changes locally and to commit only working code.**
+
+### Developing discord bot
 
 1. Clone repo
 2. Set up python virtual environment

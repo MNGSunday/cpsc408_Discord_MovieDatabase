@@ -4,7 +4,7 @@ from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 from prettytable import PrettyTable
 
-from .dao import MoviesDAO, ActorsDAO, DirectorsDAO
+from .dao import MoviesDAO, ActorsDAO, DirectorsDAO, ComposersDAO
 
 
 class MovieBot(commands.Bot):
@@ -15,6 +15,7 @@ class MovieBot(commands.Bot):
         self.movies_dao = MoviesDAO(db)
         self.actors_dao = ActorsDAO(db)
         self.directors_dao = DirectorsDAO(db)
+        self.composers_dao = ComposersDAO(db)
         self._load_commands()
 
     def _load_commands(self):
@@ -62,6 +63,20 @@ class MovieBot(commands.Bot):
             table = PrettyTable()
             table.field_names = director_attributes
             table.add_rows(directors)
+
+            await interaction.response.send_message(
+                f"```\n{table}\n```",
+                ephemeral=True,
+            )
+
+        @list_command.command(description="Lists composers")
+        async def composers(interaction: discord.Interaction):
+            composer_attributes = self.composers_dao.get_attributes()
+            composers = self.composers_dao.list()
+
+            table = PrettyTable()
+            table.field_names = composer_attributes
+            table.add_rows(composers)
 
             await interaction.response.send_message(
                 f"```\n{table}\n```",

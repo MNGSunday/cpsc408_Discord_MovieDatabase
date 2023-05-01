@@ -26,7 +26,7 @@ class MovieBot(commands.Bot):
             name="list", description="Lists records of what you want to see"
         )
 
-        @list_command.command()
+        @list_command.command(description="Lists movies")
         async def movies(interaction: discord.Interaction):
             movie_attributes = self.movies_dao.get_attributes()
             movies = self.movies_dao.list()

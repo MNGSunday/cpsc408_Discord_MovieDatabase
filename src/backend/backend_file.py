@@ -28,7 +28,19 @@ db_ops.create_database_tables()
 
 # Populates all 8 tables with given sample data
 def populate_with_sample_data():
-    for table_name, data_df in test_data.items():
+    relations = [
+        "Actors",
+        "Directors",
+        "Composers",
+        "Studios",
+        "Movies",
+        "MovieActors",
+        "Songs",
+        "Reviews",
+    ]
+    for table_name in relations:
+        print(table_name)
+        data_df = test_data[table_name]
         attribute_count = len(data_df.columns)
         placeholders = ("%s," * attribute_count)[:-1]
         query = f"INSERT INTO {table_name} VALUES({placeholders})"

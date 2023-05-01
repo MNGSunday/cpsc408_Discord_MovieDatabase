@@ -40,7 +40,7 @@ class MovieBot(commands.Bot):
                 ephemeral=True,
             )
 
-        @list_command.command()
+        @list_command.command(description="Lists actors")
         async def actors(interaction: discord.Interaction):
             actor_attributes = self.actors_dao.get_attributes()
             actors = self.actors_dao.list()

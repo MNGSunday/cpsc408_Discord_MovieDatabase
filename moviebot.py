@@ -1,8 +1,12 @@
 from discord.ext import commands
+from mysql.connector.abstracts import MySQLConnectionAbstract
+from mysql.connector.pooling import PooledMySQLConnection
 
 
 class MovieBot(commands.Bot):
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, db: MySQLConnectionAbstract | PooledMySQLConnection, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self._load_commands()
 

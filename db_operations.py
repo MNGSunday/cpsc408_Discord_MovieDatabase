@@ -62,8 +62,8 @@ class db_operations():
         # Creates MovieActor table with actorID and movieID as the composite Primary key
         query3 = '''
         CREATE TABLE MovieActors(
-            actorID INT NOT NULL,
-            movieID INT NOT NULL,
+            FOREIGN KEY (actorID) REFERENCES Actors(actorID),
+            FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             wasLead BOOLEAN,
             PRIMARY KEY (actorID, movieID)
         );

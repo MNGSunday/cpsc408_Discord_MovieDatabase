@@ -21,6 +21,39 @@ class db_operations():
         print("connection closed...")
 
     def create_database_tables(self):
+        # Creates Directors table with directorID
+        query4 = '''
+        CREATE TABLE Directors(
+            directorID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(30) NOT NULL,
+            age INT,
+            CONSTRAINT CHK_Director CHECK (age > 0)
+        );
+        '''
+        self.cursor.execute(query4)
+
+        # Creates Composers table with composerID as the Primary key
+        query5 = '''
+        CREATE TABLE Composers(
+            composerID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(30) NOT NULL,
+            age INT,
+            movieCount INT,
+            CONSTRAINT CHK_Composer CHECK (age > 0)
+        );
+        '''
+        self.cursor.execute(query5)
+
+        # Creates Studios table with studioID as the Primary key
+        query7 = '''
+        CREATE TABLE Studios(
+            studioID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(50) NOT NULL,
+            location VARCHAR(50)
+        );
+        '''
+        self.cursor.execute(query7)
+
         # Creates movies table with movieID as Primary Key
         query = '''
         CREATE TABLE Movies(
@@ -70,29 +103,6 @@ class db_operations():
         '''
         self.cursor.execute(query3)
 
-        # Creates Directors table with directorID
-        query4 = '''
-        CREATE TABLE Directors(
-            directorID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(30) NOT NULL,
-            age INT,
-            CONSTRAINT CHK_Director CHECK (age > 0)
-        );
-        '''
-        self.cursor.execute(query4)
-
-        # Creates Composers table with composerID as the Primary key
-        query5 = '''
-        CREATE TABLE Composers(
-            composerID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(30) NOT NULL,
-            age INT,
-            movieCount INT,
-            CONSTRAINT CHK_Composer CHECK (age > 0)
-        );
-        '''
-        self.cursor.execute(query5)
-
         # Creates Songs table with songID as the Primary key
         query6 = '''
         CREATE TABLE Songs(
@@ -108,16 +118,6 @@ class db_operations():
         );
         '''
         self.cursor.execute(query6)
-
-        # Creates Studios table with studioID as the Primary key
-        query7 = '''
-        CREATE TABLE Studios(
-            studioID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(50) NOT NULL,
-            location VARCHAR(50)
-        );
-        '''
-        self.cursor.execute(query7)
 
         # Creates Reviews table with reviewID as the Primary key
         query8 = '''

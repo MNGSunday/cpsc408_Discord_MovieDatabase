@@ -1,0 +1,1 @@
+from .moviebot import MovieBot

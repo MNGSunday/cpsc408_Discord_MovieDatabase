@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import os
 import sys
 import mysql.connector
-from constants import DB_CONFIG
 from moviebot import MovieBot
 
 load_dotenv()
@@ -15,6 +14,14 @@ if discord_bot_token is None:
 
 intents = discord.Intents.default()
 intents.message_content = True
+
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "root",
+    "password": "cpsc408",
+    "auth_plugin": "mysql_native_password",
+    "database": "MovieBot",
+}
 
 with mysql.connector.connect(**DB_CONFIG) as db:
     bot = MovieBot(db=db, command_prefix="!", intents=intents)

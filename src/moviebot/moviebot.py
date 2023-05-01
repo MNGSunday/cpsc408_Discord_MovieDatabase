@@ -4,7 +4,7 @@ from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 from prettytable import PrettyTable
 
-from movies import MoviesDAO
+from .dao import MoviesDAO
 
 
 class MovieBot(commands.Bot):

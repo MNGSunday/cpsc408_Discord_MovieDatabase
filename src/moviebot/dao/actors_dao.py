@@ -3,10 +3,21 @@ from typing import List
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
+from moviebot.dao.paginated_data import PaginatedData
+from moviebot.entities.actor import Actor
+
 
 class ActorsDAO:
     def __init__(self, db: MySQLConnectionAbstract | PooledMySQLConnection):
         self.db = db
+
+    def count(self) -> int:
+        with self.db.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM Actors;")
+            res = cursor.fetchone()
+            if res is None:
+                raise ValueError("No count returned")
+            return res[0]
 
     def get_attributes(self) -> List[str]:
         with self.db.cursor(named_tuple=True) as cursor:
@@ -18,7 +29,18 @@ class ActorsDAO:
                 else []
             )
 
-    def list(self):
+    def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Actor]:
         with self.db.cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM Actors;")
-            return cursor.fetchall()
+            cursor.execute(
+                "SELECT * FROM Actors ORDER BY actorID LIMIT %s, %s;", (offset, limit)
+            )
+            return PaginatedData[Actor](
+                data=[
+                    Actor.from_named_tuple(actor_named_tuple)
+                    for actor_named_tuple in cursor.fetchall()
+                ],
+                offset=offset,
+                limit=limit,
+                total=self.count(),
+                paginate=self.list,
+            )

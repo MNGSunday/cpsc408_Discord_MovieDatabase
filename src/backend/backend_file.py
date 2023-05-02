@@ -555,6 +555,185 @@ def filter_reviews(entry_choice):
             results = db_ops.query_all_values(query)
             helper.pretty_print(results)
 
+# HAS NOT BEEN TESTED
+# Picks a random movie for the user to watch
+def randomMoviePicker():
+    query = '''
+    SELECT Name, Runtime, Genre
+    FROM Movies
+    ORDER BY RANDOM()
+    LIMIT 1
+    '''
+
+    results = db_ops.whole_record(query)
+
+    print("Here's what you'll be watching tonight!\n")
+    print("   Title     |  Runtime |    Genre   ")
+    helper.pretty_print(results)
+
+# HAS NOT BEEN TESTED
+# Allows a user to add a movie to the database
+def addMovie():
+    # This function is SUCH A MESS I'm so sorry to whoever sees this. I can try
+    # to make it cleaner later :(
+
+    # Booleans to control whether we add new entries to other tables or not:
+    newDirector = True
+    newComposer = True
+    newStudio = True
+
+    # Movie: MovieID,Name,DirectorID,ComposerID,StudioID,Runtime,Budget,GrossProfit,CriticScore,ViewerScore,Genre,Year,NominatedForAward,PSafeRating
+    movieTitle = input("Enter the name of the film: ")
+    runtime = int(input("Enter the runtime: "))
+    budget = int(input("Enter the budget: "))
+    grossProfit = int(input("Enter the gross profit: "))
+    criticScore = int(input("Enter the critic score: "))
+    viewerScore = int(input("Enter the viewer score: "))
+    genre = input("Enter the genre: ")
+    year = int(input("Enter the year: "))
+    movieNomForAward = input("Was the film nominated for an award? True/False: ")
+    pSafeRating = input("Enter the P Safe Rating: ")
+
+    # Director: DirectorID,Name,Age
+    directorName = input("Enter the director's name: ")
+
+    # AT THIS POINT, CHECK IF WE ALREADY HAVE THAT DIRECTOR BEFORE PROCEEDING
+    queryX = '''
+    SELECT DISTINCT Name
+    FROM Directors;
+    '''
+    #Gets a list of all director names and see if we already have it
+    directorNames = db_ops.single_attribute(queryX)
+    for dirName in directorNames:
+        if (directorName == dirName):
+            newDirector = False
+
+    # Make the new entry
+    if (newDirector):
+        directorAge = int(input("Enter the director's age: "))
+        
+        # Insert the new director as a record
+        queryDir = '''
+        INSERT INTO Directors (Name, Age)
+        '''
+        queryDir += "VALUES ({directorName}, {directorAge})"
+        db_ops.insert_single_record(queryDir)
+
+
+    # Composer: ComposerID,Name,Age,MovieCount
+    composerName = input("Enter the composer's name: ")
+
+    # AT THIS POINT, CHECK IF WE ALREADY HAVE THAT COMPOSER BEFORE PROCEEDING
+    queryY = '''
+    SELECT DISTINCT Name
+    FROM Composers;
+    '''
+    #Gets a list of all director names and see if we already have it
+    composerNames = db_ops.single_attribute(queryY)
+    for comName in composerNames:
+        if (composerName == comName):
+            newComposer = False
+
+    # Add the new entry
+    if (newComposer):
+        composerAge = int(input("Enter the composer's age: "))
+        composerMovieCount = int(input("Enter the number of movies the composer has composed for: "))
+       
+        # Insert the new composer as a record
+        queryCom = '''
+        INSERT INTO Composers (Name, Age, MovieCount)
+        '''
+        queryCom += "VALUES ({composerName}, {composerAge}, {composerMovieCount})"
+        db_ops.insert_single_record(queryCom)
+
+
+    # Studio: StudioID,Name,Location
+    studioName = input("Enter the studio's name: ")
+
+    # AT THIS POINT, CHECK IF WE ALREADY HAVE THAT STUDIO BEFORE PROCEEDING
+    queryZ = '''
+    SELECT DISTINCT Name
+    FROM Studios;
+    '''
+    #Gets a list of all director names and see if we already have it
+    studioNames = db_ops.single_attribute(queryZ)
+    for stuName in studioNames:
+        if (studioName == stuName):
+            newStudio = False
+
+    # Add the new entry
+    if (newStudio):
+        studioLocation = input("Enter the studio's location: ")
+       
+        # Insert the new studio as a record
+        queryStu = '''
+        INSERT INTO Studios (Name, Location)
+        '''
+        queryStu += "VALUES ({studioName}, {studioLocation})"
+        db_ops.insert_single_record(queryStu)
+
+
+    # Now that any new entries into other tables have been added, we can add the movie
+    # First, get the IDs of the director, composer, and studio
+    #Director:
+    query = '''
+    SELECT DirectorID
+    FROM Directors
+    WHERE Name = {directorName}
+    '''
+    dIDList = db_ops.single_attribute(query)
+    dirID = dIDList[0]
+
+    #Composer:
+    query = '''
+    SELECT ComposerID
+    FROM Composers
+    WHERE Name = {composerName}
+    '''
+    cIDList = db_ops.single_attribute(query)
+    comID = cIDList[0]
+
+    #Studio:
+    query = '''
+    SELECT StudioID
+    FROM Studios
+    WHERE Name = {studioName}
+    '''
+    sIDList = db_ops.single_attribute(query)
+    stuID = sIDList[0]
+
+
+    # Finally, add the movie
+    queryMov = '''
+    INSERT INTO Movies (Name, DirectorID, ComposerID, StudioID, Runtime, Budget, GrossProfit, CriticScore, ViewerScore, Genre, Year, NominatedForAward, PSafeRating)
+    VALUES ({movieTitle}, {dirID}, {comID}, {stuID}, {runtime}, {budget}, {grossProfit}, {criticScore}, {viewerScore}, {genre}, {year}, {movieNomForAward}, {pSafeRating})
+    '''
+    db_ops.insert_single_record(queryMov)
+
+    print("{movieTitle} has been added to the database!")
+
+
+
+# HAS NOT BEEN TESTED
+# Allows a user to add an actor to the database
+def addActor():
+    # This takes the actor's info, adds an entry, then prompts to ask
+    # if the actor has been in a movie. If yes, get the name, check with
+    # the database, and if that movie exists, make an entry in the
+    # MovieActor table
+    pass
+
+# HAS NOT BEEN TESTED
+# Allows a user to add a song to the database
+def addSong():
+    # Get the song's title, then composer. If composer doesn't exist yet,
+    # get that info first. Then continue with song's info
+    pass
+
+# HAS NOT BEEN TESTED
+# Allows a user to add a review for an existing movie
+def addReview():
+    pass
 
 # MAIN CODE:
 populate_with_sample_data()

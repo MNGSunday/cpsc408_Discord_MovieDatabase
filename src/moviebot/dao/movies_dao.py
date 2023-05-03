@@ -5,6 +5,7 @@ from mysql.connector.pooling import PooledMySQLConnection
 
 from moviebot.dao.paginated_data import PaginatedData
 from moviebot.entities import Movie
+from moviebot.entities.movie import MovieNamedTuple
 
 
 class MoviesDAO:
@@ -28,6 +29,16 @@ class MoviesDAO:
                 if cursor.description
                 else []
             )
+
+    def get_by_id(self, movie_id: int) -> Movie | None:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute("SELECT * FROM Movies WHERE movieID = %s;", (movie_id,))
+            res = cursor.fetchone()
+            if res is None:
+                return None
+
+            data = res[0] if isinstance(res, List) else res
+            return Movie.from_named_tuple(MovieNamedTuple(*data))
 
     def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Movie]:
         with self.db.cursor(named_tuple=True) as cursor:

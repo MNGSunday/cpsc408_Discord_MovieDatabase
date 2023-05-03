@@ -4,7 +4,7 @@ from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
 from moviebot.dao.paginated_data import PaginatedData
-from moviebot.entities.director import Director
+from moviebot.entities.director import Director, DirectorNamedTuple
 
 
 class DirectorsDAO:
@@ -28,6 +28,18 @@ class DirectorsDAO:
                 if cursor.description
                 else []
             )
+
+    def get_by_id(self, director_id: int) -> Director | None:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "SELECT * FROM Directors WHERE directorID = %s;", (director_id,)
+            )
+            res = cursor.fetchone()
+            if res is None:
+                return None
+
+            data = res[0] if isinstance(res, List) else res
+            return Director.from_named_tuple(DirectorNamedTuple(*data))
 
     def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Director]:
         with self.db.cursor(named_tuple=True) as cursor:

@@ -1,6 +1,7 @@
 from helper import helper
 from db_operations import db_operations
 import pandas as pd
+import mysql.connector
 
 # python backend_file.py
 
@@ -12,18 +13,21 @@ db_ops = db_operations()
 
 # Clean the sample data files
 test_data = {
-    "Actors": pd.read_csv("Test_Data/Actors-TestData.csv"),
-    "MovieActors": pd.read_csv("Test_Data/MovieActor-TestData.csv"),
-    "Directors": pd.read_csv("Test_Data/Directors-TestData.csv"),
-    "Composers": pd.read_csv("Test_Data/Composers-TestData.csv"),
-    "Studios": pd.read_csv("Test_Data/Studios-TestData.csv"),
-    "Movies": pd.read_csv("Test_Data/Movies-TestData.csv"),
-    "Songs": pd.read_csv("Test_Data/Songs-TestData.csv"),
-    "Reviews": pd.read_csv("Test_Data/Reviews-TestData.csv"),
+    "Actors": pd.read_csv("Actors-TestData.csv"),
+    "MovieActors": pd.read_csv("MovieActor-TestData.csv"),
+    "Directors": pd.read_csv("Directors-TestData.csv"),
+    "Composers": pd.read_csv("Composers-TestData.csv"),
+    "Studios": pd.read_csv("Studios-TestData.csv"),
+    "Movies": pd.read_csv("Movies-TestData.csv"),
+    "Songs": pd.read_csv("Songs-TestData.csv"),
+    "Reviews": pd.read_csv("Reviews-TestData.csv"),
 }
 
 # Create the database's tables
-db_ops.create_database_tables()
+try:
+    db_ops.create_database_tables()
+except (mysql.connector.InterfaceError, mysql.connector.errors.ProgrammingError) as e:
+    print("Tables already exist. Proceeding as usual...")
 # -------------------------------------------------
 
 # Populates all 8 tables with given sample data
@@ -51,7 +55,7 @@ def populate_with_sample_data():
 
 
 # Printing records for all tables
-def print_table():
+def print_menu():
     print(
         """Which table would you like to read records from?
     1 - Movies
@@ -123,10 +127,10 @@ def print_table():
 
     # If user requested to view only a certain amount of results
     if number != 0:
-        query += "LIMIT:lim"
-        dict = {}
-        dict["lim"] = number
-        results = db_ops.name_placeholder_query(query, dict)
+        num_string = str(number)
+        query += "LIMIT "
+        query += num_string
+        results = db_ops.query_all_values(query)
         helper.pretty_print(results)
     # If user wanted to view all results
     else:
@@ -195,15 +199,17 @@ def filter_movies(entry_choice):
         query = """
         SELECT name
         FROM Movies
-        WHERE genre =:selection
-        ORDER BY RANDOM()
+        WHERE genre = "%s"
+        ORDER BY RAND()
         """
-        dictionary = {"selection": choices[index]}
+        # dictionary = {"selection": choices[index]}
+        # print("Selected: ", choices[index])
         # User wanted only 1 or 5 results
         if entry_choice != 0:
-            query += "LIMIT:lim"
-            dictionary["lim"] = entry_choice
-        results = db_ops.name_placeholder_query(query, dictionary)
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+        results = db_ops.query_all_values(query % choices[index])
         helper.pretty_print(results)
 
     # User wants to filter movies by budget
@@ -221,21 +227,21 @@ def filter_movies(entry_choice):
             SELECT name
             FROM Movies
             WHERE budget > 100000000
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         else:
             query = """
             SELECT name
             FROM Movies
             WHERE budget < 100000000
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         # User wanted only 1 or 5 results
         if entry_choice != 0:
-            query += "LIMIT:lim"
-            dict = {}
-            dict["lim"] = entry_choice
-            results = db_ops.name_placeholder_query(query, dict)
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+            results = db_ops.query_all_values(query)
             helper.pretty_print(results)
         else:
             results = db_ops.query_all_values(query)
@@ -256,21 +262,21 @@ def filter_movies(entry_choice):
             SELECT name
             FROM Movies
             WHERE criticScore > 65
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         else:
             query = """
             SELECT name
             FROM Movies
             WHERE criticScore < 65
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         # User wanted only 1 or 5 results
         if entry_choice != 0:
-            query += "LIMIT:lim"
-            dict = {}
-            dict["lim"] = entry_choice
-            results = db_ops.name_placeholder_query(query, dict)
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+            results = db_ops.query_all_values()
             helper.pretty_print(results)
         else:
             results = db_ops.query_all_values(query)
@@ -291,21 +297,21 @@ def filter_movies(entry_choice):
             SELECT name
             FROM Movies
             WHERE viewerScore > 65
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         else:
             query = """
             SELECT name
             FROM Movies
             WHERE viewerScore < 65
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         # User wanted only 1 or 5 results
         if entry_choice != 0:
-            query += "LIMIT:lim"
-            dict = {}
-            dict["lim"] = entry_choice
-            results = db_ops.name_placeholder_query(query, dict)
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+            results = db_ops.query_all_values(query)
             helper.pretty_print(results)
         else:
             results = db_ops.query_all_values(query)
@@ -327,28 +333,28 @@ def filter_actors(entry_choice):
         SELECT name
         FROM Actors
         WHERE age < 65
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     elif filter_choice == 2:
         query = """
         SELECT name
         FROM Actors
         WHERE age > 65
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     else:
         query = """
         SELECT name
         FROM Actors
-        ORDER BY age DESC
+        ORDER BY age ASC
         """
 
     # User wanted only 1 or 5 results
     if entry_choice != 0:
-        query += "LIMIT:lim"
-        dict = {}
-        dict["lim"] = entry_choice
-        results = db_ops.name_placeholder_query(query, dict)
+        lim_string = str(entry_choice)
+        query += "LIMIT "
+        query += lim_string
+        results = db_ops.query_all_values(query)
         helper.pretty_print(results)
     else:
         results = db_ops.query_all_values(query)
@@ -370,14 +376,14 @@ def filter_directors(entry_choice):
         SELECT name
         FROM Directors
         WHERE age < 65
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     elif filter_choice == 2:
         query = """
         SELECT name
         FROM Directors
         WHERE age > 65
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     else:
         query = """
@@ -388,10 +394,10 @@ def filter_directors(entry_choice):
 
     # User wanted only 1 or 5 results
     if entry_choice != 0:
-        query += "LIMIT:lim"
-        dict = {}
-        dict["lim"] = entry_choice
-        results = db_ops.name_placeholder_query(query, dict)
+        lim_string = str(entry_choice)
+        query += "LIMIT "
+        query += lim_string
+        results = db_ops.query_all_values(query)
         helper.pretty_print(results)
     else:
         results = db_ops.query_all_values(query)
@@ -414,36 +420,36 @@ def filter_composers(entry_choice):
         SELECT name
         FROM Composers
         WHERE age < 65
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     elif filter_choice == 2:
         query = """
         SELECT name
         FROM Composers
         WHERE age > 65
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     elif filter_choice == 3:
         query = """
         SELECT name
         FROM Composers
         WHERE movieCount < 50
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     else:
         query = """
         SELECT name
         FROM Composers
         WHERE movieCount > 50
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
 
     # User wanted only 1 or 5 results
     if entry_choice != 0:
-        query += "LIMIT:lim"
-        dict = {}
-        dict["lim"] = entry_choice
-        results = db_ops.name_placeholder_query(query, dict)
+        lim_string = str(entry_choice)
+        query += "LIMIT "
+        query += lim_string
+        results = db_ops.query_all_values(query)
         helper.pretty_print(results)
     else:
         results = db_ops.query_all_values(query)
@@ -465,21 +471,21 @@ def filter_songs(entry_choice):
         SELECT songName
         FROM Songs
         WHERE songLength < 150
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     else:
         query = """
         SELECT songName
         FROM Songs
         WHERE songLength > 150
-        ORDER BY RANDOM()
+        ORDER BY RAND()
         """
     # User wanted only 1 or 5 results
     if entry_choice != 0:
-        query += "LIMIT:lim"
-        dict = {}
-        dict["lim"] = entry_choice
-        results = db_ops.name_placeholder_query(query, dict)
+        lim_string = str(entry_choice)
+        query += "LIMIT "
+        query += lim_string
+        results = db_ops.query_all_values(query)
         helper.pretty_print(results)
     else:
         results = db_ops.query_all_values(query)
@@ -516,15 +522,16 @@ def filter_reviews(entry_choice):
         SELECT Movies.name, Reviews.username, Reviews.text
         FROM Reviews
         INNER JOIN Movies ON Movies.movieID = Reviews.movieID
-        WHERE Movies.name =:selection
-        ORDER BY RANDOM()
+        WHERE Movies.name = "%s"
+        ORDER BY RAND()
         """
-        dictionary = {"selection": choices[name_index]}
+        # dictionary = {"selection": choices[name_index]}
         # User wanted only 1 or 5 results
         if entry_choice != 0:
-            query += "LIMIT:lim"
-            dictionary["lim"] = entry_choice
-        results = db_ops.name_placeholder_query(query, dictionary)
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+        results = db_ops.query_all_values(query % choices[name_index])
         helper.pretty_print(results)
 
     else:
@@ -534,7 +541,7 @@ def filter_reviews(entry_choice):
             FROM Reviews
             INNER JOIN Movies ON Movies.movieID = Reviews.movieID
             WHERE Reviews.score > 7.5
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         else:
             query = """
@@ -542,14 +549,14 @@ def filter_reviews(entry_choice):
             FROM Reviews
             INNER JOIN Movies ON Movies.movieID = Reviews.movieID
             WHERE Reviews.score < 7.5
-            ORDER BY RANDOM()
+            ORDER BY RAND()
             """
         # User wanted only 1 or 5 results
         if entry_choice != 0:
-            query += "LIMIT:lim"
-            dict = {}
-            dict["lim"] = entry_choice
-            results = db_ops.name_placeholder_query(query, dict)
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+            results = db_ops.query_all_values(query)
             helper.pretty_print(results)
         else:
             results = db_ops.query_all_values(query)
@@ -558,12 +565,12 @@ def filter_reviews(entry_choice):
 # HAS NOT BEEN TESTED
 # Picks a random movie for the user to watch
 def randomMoviePicker():
-    query = '''
-    SELECT Name, Runtime, Genre
+    query = """
+    SELECT name, runtime, genre
     FROM Movies
-    ORDER BY RANDOM()
+    ORDER BY RAND()
     LIMIT 1
-    '''
+    """
 
     results = db_ops.whole_record(query)
 
@@ -736,6 +743,27 @@ def addReview():
     pass
 
 # MAIN CODE:
-populate_with_sample_data()
+try:
+    populate_with_sample_data()
+except:
+    print("Data in table already exists. Proceeding as usual...")
 
+while (True):
+    print('''Currently, you have the following options:
+    1 - Print out tables
+    2 - Filter tables
+    3 - Pick a random movie
+    0 - Quit
+    ''')
+    menu_choice = helper.get_choice([0,1,2,3])
+    if menu_choice == 1:
+        print_menu()
+        continue
+    if menu_choice == 2:
+        filter_menu()
+        continue
+    if menu_choice == 3:
+        randomMoviePicker()
+    if menu_choice == 0:
+        break
 db_ops.destructor()

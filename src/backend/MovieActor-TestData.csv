@@ -1,0 +1,8 @@
+ActorID,MovieID,wasLead
+1,1,TRUE
+2,1,TRUE
+3,2,TRUE
+4,3,TRUE
+5,4,TRUE
+6,5,TRUE
+7,5,TRUE

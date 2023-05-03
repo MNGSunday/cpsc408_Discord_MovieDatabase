@@ -29,6 +29,22 @@ class MoviesDAO:
                 if cursor.description
                 else []
             )
+        
+    # def create(self, movie: Movie) -> Movie:
+    #     with self.db.cursor(named_tuple=True) as cursor:
+    #         cursor.execute(
+    #             "INSERT INTO Movies (movieName, directorID, composerID, releaseYear) VALUES (%s, %s, %s, %s);",
+    #             (
+    #                 movie.movie_name,
+    #                 movie.director_id,
+    #                 movie.composer_id,
+    #                 movie.release_year,
+    #             ),
+    #         )
+    #         self.db.commit()
+    #         movie_id = cursor.lastrowid
+    #         return self.get_by_id(movie_id)
+    
 
     def get_by_id(self, movie_id: int) -> Movie | None:
         with self.db.cursor(named_tuple=True) as cursor:

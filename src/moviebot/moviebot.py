@@ -9,5 +9,9 @@ class MovieBot(AbstractMovieBot):
         self._load_commands()
 
     def _load_commands(self):
-        self.add_cog(ListCommands(self))
-        self.add_cog(GetCommands(self))
+        cogs = [
+            ListCommands(self),
+            GetCommands(self),
+        ]
+        for cog in cogs:
+            self.add_cog(cog)

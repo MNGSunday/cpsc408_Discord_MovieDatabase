@@ -30,20 +30,46 @@ class MoviesDAO:
                 else []
             )
         
-    # def create(self, movie: Movie) -> Movie:
+    # def create(
+    #     self,
+    #     movie_id: int,
+    #     name: str,
+    #     director_id: int, 
+    #     composer_id: int,
+    #     studio_id: int,
+    #     runtime: str,
+    #     budget: int,
+    #     gross_profit: int,
+    #     critic_score: int,
+    #     viewer_score: int,
+    #     genre: str,
+    #     year: int,
+    #     nominated_for_award: int,
+    #     parental_rating: str,
+    # ) -> None:
     #     with self.db.cursor(named_tuple=True) as cursor:
     #         cursor.execute(
-    #             "INSERT INTO Movies (movieName, directorID, composerID, releaseYear) VALUES (%s, %s, %s, %s);",
+    #             "INSERT INTO Movies (MovieID, Name, DirectorID, ComposerID, StudioID, Runtime, Budget, Gross Profit, CriticScore, ViewerScore, Genre, Year, NominatedForAward, PSafeRating) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
     #             (
-    #                 movie.movie_name,
-    #                 movie.director_id,
-    #                 movie.composer_id,
-    #                 movie.release_year,
+    #                 movie_id,
+    #                 name,
+    #                 director_id,
+    #                 composer_id,
+    #                 studio_id,
+    #                 runtime,
+    #                 budget,
+    #                 gross_profit,
+    #                 critic_score,
+    #                 viewer_score,
+    #                 genre,
+    #                 year,
+    #                 nominated_for_award,
+    #                 parental_rating,
     #             ),
     #         )
     #         self.db.commit()
-    #         movie_id = cursor.lastrowid
-    #         return self.get_by_id(movie_id)
+    #         cursor.close()
+            
     
 
     def get_by_id(self, movie_id: int) -> Movie | None:

@@ -1,43 +1,60 @@
-import discord
-from discord.commands.core import SlashCommandGroup
-from discord.ext import commands
-from moviebot.abstract_moviebot import AbstractMovieBot
+# import discord
+# from discord.commands.core import SlashCommandGroup
+# from discord.ext import commands
+# from moviebot.abstract_moviebot import AbstractMovieBot
 
-class createCommands(commands.Cog):
-    def __init__(self, bot: AbstractMovieBot):
-        self.bot = bot
+# class createCommands(commands.Cog):
+#     def __init__(self, bot: AbstractMovieBot):
+#         self.bot = bot
     
-    get_entity_commands = SlashCommandGroup(
-        name="create", description="Create a record for some entity"
-    )
+#     get_entity_commands = SlashCommandGroup(
+#         name="create", description="Create a record for some entity"
+#     )
 
     
-    @get_entity_commands.command(name="movie", description="Create a movie given its id")
-    async def create_movie(
-        self,
-        ctx: discord.ApplicationContext,
-        movie_id: int,  #specifies that movie id is an integer type
-        name: str,
-        directorID: int, 
-        composerID: int,
-        studioID: int,
-        runtime: str,
-        budget: int,
-        grossProfit: int,
-        criticScore: int,
-        viewerScore: int,
-        genre: str,
-        year: int,
-        nominatedForAward: int,
-        PSafeRating: str,
-    ):
-        movie = self.bot.movies_dao.get_by_id(movie_id)
-        #movie = self.bot.movies_dao.create(movie_id)
-        if movie is None:
-            await ctx.response.send_message(
-                f"Movie with id `{movie_id}` does not exist", ephemeral=True
-            )
-            return
+#     @get_entity_commands.command(name="movie", description="Create a movie given its id")
+#     async def create_movie(
+#         self,
+#         ctx: discord.ApplicationContext,
+#         movie_id: int,  #specifies that movie id is an integer type
+#         name: str,
+#         directorID: int, 
+#         composerID: int,
+#         studioID: int,
+#         runtime: str,
+#         budget: int,
+#         grossProfit: int,
+#         criticScore: int,
+#         viewerScore: int,
+#         genre: str,
+#         year: int,
+#         nominatedForAward: int,
+#         PSafeRating: str,
+#     ):
+#         movie = self.bot.movies_dao.get_by_id(movie_id)
+#         if movie is not None:
+#             await ctx.response.send_message(
+#                 f"Movie with id `{movie_id}` already exists", ephemeral=True
+#             )
+#             return
+        
+#         self.bot.movies_dao.create(
+#             movie_id,
+#             name,
+#             directorID,
+#             composerID,
+#             studioID,
+#             runtime,
+#             budget,
+#             grossProfit,
+#             criticScore,
+#             viewerScore,
+#             genre,
+#             year,
+#             nominatedForAward,
+#             PSafeRating,
+#         )
+        
 #---------------------------JUST COPIED FROM get.py---------------------------------
         # director = self.bot.directors_dao.get_by_id(movie.director_id)
         # composer = self.bot.composers_dao.get_by_id(movie.composer_id)

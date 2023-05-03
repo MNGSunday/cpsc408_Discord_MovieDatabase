@@ -1,4 +1,5 @@
 from moviebot.abstract_moviebot import AbstractMovieBot
+from moviebot.commands.get import GetCommands
 from moviebot.commands.list import ListCommands
 
 
@@ -9,3 +10,4 @@ class MovieBot(AbstractMovieBot):
 
     def _load_commands(self):
         self.add_cog(ListCommands(self))
+        self.add_cog(GetCommands(self))

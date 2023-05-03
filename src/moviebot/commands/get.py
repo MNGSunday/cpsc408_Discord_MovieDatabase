@@ -25,10 +25,19 @@ class GetCommands(commands.Cog):
             )
             return
 
+        director = self.bot.directors_dao.get_by_id(movie.director_id)
+        composer = self.bot.composers_dao.get_by_id(movie.composer_id)
+        studio = self.bot.studios_dao.get_by_id(movie.studio_id)
+
+        if director is None or composer is None or studio is None:
+            raise ValueError(
+                "Movie has invalid director, composer, studio foreign keys"
+            )
+
         embed = discord.Embed(title=movie.name)
-        embed.add_field(name="Director", value=str(movie.director_id))
-        embed.add_field(name="Composer", value=str(movie.composer_id))
-        embed.add_field(name="Studio", value=str(movie.studio_id))
+        embed.add_field(name="Director", value=director.name)
+        embed.add_field(name="Composer", value=composer.name)
+        embed.add_field(name="Studio", value=studio.name)
         embed.add_field(name="Runtime", value=f"{movie.runtime} min")
         embed.add_field(name="Budget", value=str(movie.budget))
         embed.add_field(name="Gross Profit", value=str(movie.gross_profit))

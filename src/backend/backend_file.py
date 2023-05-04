@@ -747,7 +747,8 @@ def special_filtering_menu():
     print(
         """You have the following options for accessing special table filters:
         1 - Find Actors by Movie
-        2 - Find Movies with more than 1 Lead Actor
+        2 - Find Directors who have directed movies with a gross profit over 300 million
+        3 - Find Directors who have directed movies with a gross profit under 300 million
         """
     )
     table_choice = helper.get_choice([1, 2, 3, 4, 5, 6])
@@ -759,6 +760,10 @@ def special_filtering_menu():
 
     if table_choice == 1:
         actors_by_movie(number)
+    if table_choice == 2:
+        directors_high_grossing(number)
+    if table_choice == 3:
+        directors_low_grossing(number)
 
 # Query that asks user for a movie, and based on the movie, obtains those actors from a triple join query
 def actors_by_movie(entry_choice):
@@ -791,6 +796,48 @@ def actors_by_movie(entry_choice):
             query += "LIMIT "
             query += lim_string
     results = db_ops.query_all_values(query % movie_name)
+    helper.pretty_print(results)
+
+# Query that provides the user the names of Directors whose movies have had a gross profit over 300 million using a subquery
+def directors_high_grossing(entry_choice):
+    query = """
+    SELECT Directors.name
+    FROM Directors
+    INNER JOIN (
+        SELECT Movies.directorID
+        FROM Movies
+        WHERE grossProfit > 300000000
+    ) AS HighGrossingMovie
+    ON HighGrossingMovie.directorID = Directors.directorID
+    ORDER BY RAND()
+    """
+
+    if entry_choice != 0:
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+    results = db_ops.query_all_values(query)
+    helper.pretty_print(results)
+
+# Query that provides the user the names of Directors whose movies have had a gross profit over 300 million using a subquery
+def directors_low_grossing(entry_choice):
+    query = """
+    SELECT Directors.name
+    FROM Directors
+    INNER JOIN (
+        SELECT Movies.directorID
+        FROM Movies
+        WHERE grossProfit < 300000000
+    ) AS HighGrossingMovie
+    ON HighGrossingMovie.directorID = Directors.directorID
+    ORDER BY RAND()
+    """
+
+    if entry_choice != 0:
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+    results = db_ops.query_all_values(query)
     helper.pretty_print(results)
 
 # MAIN CODE:

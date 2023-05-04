@@ -43,7 +43,7 @@ def populate_with_sample_data():
         "Reviews",
     ]
     for table_name in relations:
-        print(table_name)
+        # print(table_name)
         data_df = test_data[table_name]
         attribute_count = len(data_df.columns)
         placeholders = ("%s," * attribute_count)[:-1]
@@ -742,6 +742,57 @@ def addSong():
 def addReview():
     pass
 
+# Special Filtering Options Menu (Basically all of the special/complex queries)
+def special_filtering_menu():
+    print(
+        """You have the following options for accessing special table filters:
+        1 - Find Actors by Movie
+        2 - Find Movies with more than 1 Lead Actor
+        """
+    )
+    table_choice = helper.get_choice([1, 2, 3, 4, 5, 6])
+
+    # Optional limit to how many entries user views
+    print("How many entries would you like returned?")
+    print("Enter 1, 5, or 0 for all entries")
+    number = helper.get_choice([1, 5, 0])
+
+    if table_choice == 1:
+        actors_by_movie(number)
+
+# Query that asks user for a movie, and based on the movie, obtains those actors from a triple join query
+def actors_by_movie(entry_choice):
+    name_query = """
+    SELECT DISTINCT name
+    FROM Movies;
+    """
+    # Show user movie names in database, then get their input
+    print("Names from Movie database: ")
+    names = db_ops.single_attribute(name_query)
+
+    choices = {}
+    for i in range(len(names)):
+        print(i, names[i])
+        choices[i] = names[i]
+    name_index = helper.get_choice(choices.keys())
+    movie_name = choices[name_index]
+
+    query = """
+    SELECT Actors.name
+    FROM MovieActors
+    INNER JOIN Actors ON Actors.actorID = MovieActors.actorID
+    INNER JOIN Movies ON Movies.movieID = MovieActors.movieID
+    WHERE Movies.name = "%s"
+    ORDER BY RAND()
+    """
+
+    if entry_choice != 0:
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+    results = db_ops.query_all_values(query % movie_name)
+    helper.pretty_print(results)
+
 # MAIN CODE:
 try:
     populate_with_sample_data()
@@ -753,9 +804,10 @@ while (True):
     1 - Print out tables
     2 - Filter tables
     3 - Pick a random movie
+    4 - Even more special table filtering
     0 - Quit
     ''')
-    menu_choice = helper.get_choice([0,1,2,3])
+    menu_choice = helper.get_choice([0,1,2,3,4])
     if menu_choice == 1:
         print_menu()
         continue
@@ -764,6 +816,8 @@ while (True):
         continue
     if menu_choice == 3:
         randomMoviePicker()
+    if menu_choice == 4:
+        special_filtering_menu()
     if menu_choice == 0:
         break
 db_ops.destructor()

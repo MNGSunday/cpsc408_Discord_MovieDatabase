@@ -748,8 +748,9 @@ def special_filtering_menu():
         """You have the following options for accessing special table filters:
         1 - Find Actors by Movie
         2 - Display number of Actors in each Movie
-        2 - Find Directors who have directed movies with a gross profit over 300 million
-        3 - Find Directors who have directed movies with a gross profit under 300 million
+        3 - Find Directors who have directed movies with a gross profit over 300 million
+        4 - Find Directors who have directed movies with a gross profit under 300 million
+        5 - Find Directors by Studio
         """
     )
     table_choice = helper.get_choice([1, 2, 3, 4, 5, 6])
@@ -767,6 +768,8 @@ def special_filtering_menu():
         directors_high_grossing(number)
     if table_choice == 4:
         directors_low_grossing(number)
+    if table_choice == 5:
+        directors_by_studio(number)
 
 # Query that asks user for a movie, and based on the movie, obtains those actors from a triple join query
 def actors_by_movie(entry_choice):
@@ -858,6 +861,39 @@ def directors_low_grossing(entry_choice):
             query += "LIMIT "
             query += lim_string
     results = db_ops.query_all_values(query)
+    helper.pretty_print(results)
+
+# Query that asks the user for a studio, and based on that studio, obtains the director(s) who have worked with the studio using a triple join
+def directors_by_studio(entry_choice):
+    name_query = """
+    SELECT DISTINCT name
+    FROM Studios;
+    """
+    # Show user movie names in database, then get their input
+    print("Names from Studio database: ")
+    names = db_ops.single_attribute(name_query)
+
+    choices = {}
+    for i in range(len(names)):
+        print(i, names[i])
+        choices[i] = names[i]
+    name_index = helper.get_choice(choices.keys())
+    studio_name = choices[name_index]
+
+    query = """
+    SELECT Directors.name
+    FROM Movies
+    INNER JOIN Directors ON Directors.directorID = Movies.directorID
+    INNER JOIN Studios ON Studios.studioID = Movies.studioID
+    WHERE Studios.name = "%s"
+    ORDER BY RAND()
+    """
+
+    if entry_choice != 0:
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+    results = db_ops.query_all_values(query % studio_name)
     helper.pretty_print(results)
 
 # MAIN CODE:

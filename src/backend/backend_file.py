@@ -747,6 +747,7 @@ def special_filtering_menu():
     print(
         """You have the following options for accessing special table filters:
         1 - Find Actors by Movie
+        2 - Display number of Actors in each Movie
         2 - Find Directors who have directed movies with a gross profit over 300 million
         3 - Find Directors who have directed movies with a gross profit under 300 million
         """
@@ -761,8 +762,10 @@ def special_filtering_menu():
     if table_choice == 1:
         actors_by_movie(number)
     if table_choice == 2:
-        directors_high_grossing(number)
+        actors_per_movie(number)
     if table_choice == 3:
+        directors_high_grossing(number)
+    if table_choice == 4:
         directors_low_grossing(number)
 
 # Query that asks user for a movie, and based on the movie, obtains those actors from a triple join query
@@ -796,6 +799,23 @@ def actors_by_movie(entry_choice):
             query += "LIMIT "
             query += lim_string
     results = db_ops.query_all_values(query % movie_name)
+    helper.pretty_print(results)
+
+# Query that provides the user the number of actors per movie using a Group By / Aggregate Clause
+def actors_per_movie(entry_choice):
+    query = """
+    SELECT Movies.name AS movieName, COUNT(DISTINCT MovieActors.actorID) AS actorCount
+    FROM Movies
+    INNER JOIN MovieActors ON MovieActors.movieID = Movies.movieID
+    GROUP BY movieName
+    ORDER BY RAND()
+    """
+
+    if entry_choice != 0:
+            lim_string = str(entry_choice)
+            query += "LIMIT "
+            query += lim_string
+    results = db_ops.query_all_values(query)
     helper.pretty_print(results)
 
 # Query that provides the user the names of Directors whose movies have had a gross profit over 300 million using a subquery

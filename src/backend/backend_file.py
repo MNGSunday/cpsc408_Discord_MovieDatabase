@@ -723,11 +723,37 @@ def addMovie():
 
 # HAS NOT BEEN TESTED
 # Allows a user to add an actor to the database
+# Actors(ActorID, Name, Age, NominatedForAward, Hotness, Date)
+#Bro there is no way we have a hotness attribute
 def addActor():
+#def addActor(actorID, name, age, nominatedForAward, hotness, date, movieBeenIn):
     # This takes the actor's info, adds an entry, then prompts to ask
     # if the actor has been in a movie. If yes, get the name, check with
     # the database, and if that movie exists, make an entry in the
     # MovieActor table
+
+
+    #----------------------------NOT TESTED----------------------------w
+    # query = '''
+    # INSERT INTO Actors VALUES(\'''' + name + '''\',\'''' + age + '''\',\'''' + nominatedForAward + '''\',\'''' + hotness + '''\',\'''' + date + '''\')'''
+    # db_operations.insert_single_record(query)
+
+    # #if actor has been in a movie
+    # if(movieBeenIn != "NA"):
+    #     #check if movie exists
+    #     query = '''
+    #     SELECT name
+    #     FROM Movies
+    #     WHERE name = \'''' + movieBeenIn + '''\''''
+    #     movieList = db_operations.single_attribute(query)
+    #     if(movieList[0] == movieBeenIn):
+    #         #add to MovieActors
+    #         query = '''
+    #         INSERT INTO MovieActors VALUES(\'''' + actorID + '''\',\'''' + movieBeenIn + '''\', 1)'''
+    #         db_operations.insert_single_record(query)
+    #     else:
+    #         print("Movie does not exist in database")
+    #------------------------------------------------------------------
     pass
 
 # HAS NOT BEEN TESTED

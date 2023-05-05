@@ -758,9 +758,25 @@ def addActor():
 
 # HAS NOT BEEN TESTED
 # Allows a user to add a song to the database
+# Songs(SongID, ComposerID*, MovieID*, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating, SongLength)
 def addSong():
+#def addSong(songID, composerID, movieID, connorsIncrediblyProfessionalAndPurelyObjectiveRating, songLength):
     # Get the song's title, then composer. If composer doesn't exist yet,
     # get that info first. Then continue with song's info
+
+    #----------------------------------------NOT TESTED------------------------------------------------------
+    # #what do we do if composerID doesn't exist yet?
+    # checkComposerQuery = '''
+    #     SELECT ComposerID
+    #     FROM Composers
+    # '''
+    
+    # query = '''
+    #     INSERT INTO Songs VALUES(\'''' + songID + '''\',\'''' + composerID + '''\',\'''' + movieID + '''\',\'''' + connorsIncrediblyProfessionalAndPurelyObjectiveRating + '''\',\'''' + songLength + '''\')
+    # '''
+    # db_operations.insert_single_record(query)
+    #----------------------------------------------------------------------------------------------
+
     pass
 
 # HAS NOT BEEN TESTED

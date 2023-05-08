@@ -54,3 +54,26 @@ class ActorsDAO:
                 total=self.count(),
                 paginate=self.list,
             )
+
+    def create(
+        self,
+        name: str,
+        age: int,
+        hotness: int,
+        date: str,
+    ) -> Actor:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "INSERT INTO Actors (name, age, hotness, date) VALUES (%s, %s, %s, %s);",
+                (name, age, hotness, date),
+            )
+            self.db.commit()
+            if cursor.lastrowid is None:
+                raise ValueError("Last inserted actor id is None")
+            return Actor(
+                actor_id=cursor.lastrowid,
+                name=name,
+                age=age,
+                hotness=hotness,
+                date=date,
+            )

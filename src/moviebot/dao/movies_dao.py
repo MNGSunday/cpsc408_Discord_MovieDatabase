@@ -29,48 +29,6 @@ class MoviesDAO:
                 if cursor.description
                 else []
             )
-        
-    # def create(
-    #     self,
-    #     movie_id: int,
-    #     name: str,
-    #     director_id: int, 
-    #     composer_id: int,
-    #     studio_id: int,
-    #     runtime: str,
-    #     budget: int,
-    #     gross_profit: int,
-    #     critic_score: int,
-    #     viewer_score: int,
-    #     genre: str,
-    #     year: int,
-    #     nominated_for_award: int,
-    #     parental_rating: str,
-    # ) -> None:
-    #     with self.db.cursor(named_tuple=True) as cursor:
-    #         cursor.execute(
-    #             "INSERT INTO Movies (MovieID, Name, DirectorID, ComposerID, StudioID, Runtime, Budget, Gross Profit, CriticScore, ViewerScore, Genre, Year, NominatedForAward, PSafeRating) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
-    #             (
-    #                 movie_id,
-    #                 name,
-    #                 director_id,
-    #                 composer_id,
-    #                 studio_id,
-    #                 runtime,
-    #                 budget,
-    #                 gross_profit,
-    #                 critic_score,
-    #                 viewer_score,
-    #                 genre,
-    #                 year,
-    #                 nominated_for_award,
-    #                 parental_rating,
-    #             ),
-    #         )
-    #         self.db.commit()
-    #         cursor.close()
-            
-    
 
     def get_by_id(self, movie_id: int) -> Movie | None:
         with self.db.cursor(named_tuple=True) as cursor:
@@ -96,4 +54,60 @@ class MoviesDAO:
                 limit=limit,
                 total=self.count(),
                 paginate=self.list,
+            )
+
+    def create(
+        self,
+        name: str,
+        director_id: int,
+        composer_id: int,
+        studio_id: int,
+        runtime: int,
+        budget: int,
+        gross_profit: int,
+        critic_score: int,
+        viewer_score: int,
+        genre: str,
+        year: int,
+        nominated_for_award: bool,
+        p_safe_rating: str,
+    ) -> Movie:
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                """INSERT INTO Movies (name, directorID, composerID, studioID, runtime, budget, grossProfit, criticScore, viewerScore, genre, year, nominatedForAward, pSafeRating)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""",
+                (
+                    name,
+                    director_id,
+                    composer_id,
+                    studio_id,
+                    runtime,
+                    budget,
+                    gross_profit,
+                    critic_score,
+                    viewer_score,
+                    genre,
+                    year,
+                    nominated_for_award,
+                    p_safe_rating,
+                ),
+            )
+            self.db.commit()
+            if cursor.lastrowid is None:
+                raise ValueError("Couldn't fetch last inserted movie")
+            return Movie(
+                movie_id=cursor.lastrowid,
+                name=name,
+                director_id=director_id,
+                composer_id=composer_id,
+                studio_id=studio_id,
+                runtime=runtime,
+                budget=budget,
+                gross_profit=gross_profit,
+                critic_score=critic_score,
+                viewer_score=viewer_score,
+                genre=genre,
+                year=year,
+                nominated_for_award=nominated_for_award,
+                p_safe_rating=p_safe_rating,
             )

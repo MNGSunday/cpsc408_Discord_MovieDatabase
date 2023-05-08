@@ -31,9 +31,7 @@ class StudiosDAO:
 
     def get_by_id(self, studio_id: int) -> Studio | None:
         with self.db.cursor(named_tuple=True) as cursor:
-            cursor.execute(
-                "SELECT * FROM Studios WHERE studioID = %s;", (studio_id,)
-            )
+            cursor.execute("SELECT * FROM Studios WHERE studioID = %s;", (studio_id,))
             res = cursor.fetchone()
             if res is None:
                 return None
@@ -55,4 +53,19 @@ class StudiosDAO:
                 limit=limit,
                 total=self.count(),
                 paginate=self.list,
+            )
+
+    def create(self, name: str, location: str) -> Studio:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "INSERT INTO Studios (name, location) VALUES (%s, %s);",
+                (name, location),
+            )
+            self.db.commit()
+            if cursor.lastrowid is None:
+                raise ValueError("Couldn't fetch last inserted studio")
+            return Studio(
+                studio_id=cursor.lastrowid,
+                name=name,
+                location=location,
             )

@@ -31,9 +31,7 @@ class SongsDAO:
 
     def get_by_id(self, song_id: int) -> Song | None:
         with self.db.cursor(named_tuple=True) as cursor:
-            cursor.execute(
-                "SELECT * FROM Songs WHERE songID = %s;", (song_id,)
-            )
+            cursor.execute("SELECT * FROM Songs WHERE songID = %s;", (song_id,))
             res = cursor.fetchone()
             if res is None:
                 return None
@@ -55,4 +53,35 @@ class SongsDAO:
                 limit=limit,
                 total=self.count(),
                 paginate=self.list,
+            )
+
+    def create(
+        self,
+        name: str,
+        composer_id: int,
+        movie_id: int,
+        length: int,
+        connors_incredibly_professional_and_purely_objective_rating: str,
+    ) -> Song:
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Songs (songName, composerID, movieID, songLength, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating) VALUES (%s, %s, %s, %s, %s);",
+                (
+                    name,
+                    composer_id,
+                    movie_id,
+                    length,
+                    connors_incredibly_professional_and_purely_objective_rating,
+                ),
+            )
+            self.db.commit()
+            if cursor.lastrowid is None:
+                raise ValueError("Couldn't fetch last inserted song")
+            return Song(
+                song_id=cursor.lastrowid,
+                song_name=name,
+                composer_id=composer_id,
+                movie_id=movie_id,
+                song_length=length,
+                connors_incredibly_professional_and_purely_objective_rating=connors_incredibly_professional_and_purely_objective_rating,
             )

@@ -57,3 +57,21 @@ class DirectorsDAO:
                 total=self.count(),
                 paginate=self.list,
             )
+
+    def create(
+        self,
+        name: str,
+        age: int,
+    ) -> Director:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "INSERT INTO Directors (name, age) VALUES (%s, %s);", (name, age)
+            )
+            self.db.commit()
+            if cursor.lastrowid is None:
+                raise ValueError("Last inserted director id is None")
+            return Director(
+                director_id=cursor.lastrowid,
+                name=name,
+                age=age,
+            )

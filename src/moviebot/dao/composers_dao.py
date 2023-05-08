@@ -57,3 +57,17 @@ class ComposersDAO:
                 total=self.count(),
                 paginate=self.list,
             )
+
+    def create(self, name: str, age: int, movie_count: int) -> Composer:
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Composers (name, age, movieCount) VALUES (%s, %s, %s);",
+                (name, age, movie_count),
+            )
+            self.db.commit()
+
+        if cursor.lastrowid is None:
+            raise ValueError("Couldn't fetch last inserted composer")
+        return Composer(
+            composer_id=cursor.lastrowid, name=name, age=age, movie_count=movie_count
+        )

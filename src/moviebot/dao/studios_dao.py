@@ -69,3 +69,22 @@ class StudiosDAO:
                 name=name,
                 location=location,
             )
+
+    def update(self, studio_id: int, updated_values: dict) -> Studio:
+        for key in updated_values.keys():
+            if key not in self.get_attributes():
+                raise ValueError(f"Invalid key {key}")
+
+        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        values = tuple(updated_values.values())
+
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE Studios SET {set_string} WHERE studioID = %s;",
+                values + (studio_id,),
+            )
+            self.db.commit()
+            updated_studio = self.get_by_id(studio_id)
+            if updated_studio is None:
+                raise ValueError(f"Couldn't fetch updated studio with id {studio_id}")
+            return updated_studio

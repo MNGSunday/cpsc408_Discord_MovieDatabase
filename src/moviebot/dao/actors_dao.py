@@ -77,3 +77,22 @@ class ActorsDAO:
                 hotness=hotness,
                 date=date,
             )
+
+    def update(self, actor_id: int, updated_values: dict) -> Actor:
+        for key in updated_values.keys():
+            if key not in self.get_attributes():
+                raise ValueError(f"Invalid key {key}")
+
+        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        values = tuple(updated_values.values())
+
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE Actors SET {set_string} WHERE actorID = %s;",
+                values + (actor_id,),
+            )
+            self.db.commit()
+            updated_actor = self.get_by_id(actor_id)
+            if updated_actor is None:
+                raise ValueError(f"Couldn't fetch updated actor with id {actor_id}")
+            return updated_actor

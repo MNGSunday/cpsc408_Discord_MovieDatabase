@@ -75,3 +75,24 @@ class DirectorsDAO:
                 name=name,
                 age=age,
             )
+
+    def update(self, director_id: int, updated_values: dict) -> Director:
+        for key in updated_values.keys():
+            if key not in self.get_attributes():
+                raise ValueError(f"Invalid key {key}")
+
+        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        values = tuple(updated_values.values())
+
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                f"UPDATE Directors SET {set_string} WHERE directorID = %s;",
+                values + (director_id,),
+            )
+            self.db.commit()
+            updated_director = self.get_by_id(director_id)
+            if updated_director is None:
+                raise ValueError(
+                    f"Couldn't fetch updated director with id {director_id}"
+                )
+            return updated_director

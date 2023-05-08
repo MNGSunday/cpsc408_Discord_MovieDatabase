@@ -71,3 +71,24 @@ class ComposersDAO:
         return Composer(
             composer_id=cursor.lastrowid, name=name, age=age, movie_count=movie_count
         )
+
+    def update(self, composer_id: int, updated_values: dict) -> Composer:
+        for key in updated_values.keys():
+            if key not in self.get_attributes():
+                raise ValueError(f"Invalid key {key}")
+
+        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        values = tuple(updated_values.values())
+
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE Composers SET {set_string} WHERE composerID = %s;",
+                values + (composer_id,),
+            )
+            self.db.commit()
+            updated_composer = self.get_by_id(composer_id)
+            if updated_composer is None:
+                raise ValueError(
+                    f"Couldn't fetch updated composer with id {composer_id}"
+                )
+            return updated_composer

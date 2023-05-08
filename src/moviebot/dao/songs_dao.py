@@ -85,3 +85,22 @@ class SongsDAO:
                 song_length=length,
                 connors_incredibly_professional_and_purely_objective_rating=connors_incredibly_professional_and_purely_objective_rating,
             )
+
+    def update(self, song_id: int, updated_values: dict) -> Song:
+        for key in updated_values.keys():
+            if key not in self.get_attributes():
+                raise ValueError(f"Invalid key {key}")
+
+        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        values = tuple(updated_values.values())
+
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE Songs SET {set_string} WHERE songID = %s;",
+                values + (song_id,),
+            )
+            self.db.commit()
+            updated_song = self.get_by_id(song_id)
+            if updated_song is None:
+                raise ValueError(f"Couldn't fetch updated song with id {song_id}")
+            return updated_song

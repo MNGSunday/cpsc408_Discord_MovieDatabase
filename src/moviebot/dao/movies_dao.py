@@ -111,3 +111,22 @@ class MoviesDAO:
                 nominated_for_award=nominated_for_award,
                 p_safe_rating=p_safe_rating,
             )
+
+    def update(self, movie_id: int, updated_values: dict) -> Movie:
+        for key in updated_values.keys():
+            if key not in self.get_attributes():
+                raise ValueError(f"Invalid key {key}")
+
+        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
+        values = tuple(updated_values.values())
+
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                f"UPDATE Movies SET {set_string} WHERE movieID = %s;",
+                values + (movie_id,),
+            )
+            self.db.commit()
+            updated_movie = self.get_by_id(movie_id)
+            if updated_movie is None:
+                raise ValueError(f"Couldn't fetch updated movie with id {movie_id}")
+            return updated_movie

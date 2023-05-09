@@ -781,7 +781,23 @@ def addSong():
 
 # HAS NOT BEEN TESTED
 # Allows a user to add a review for an existing movie
+#Reviews(ReviewID, Username, MovieID*, Score, Text)
 def addReview():
+# def addReview(reviewID, username, movieID, score, text):
+#     # Check if movie exists, then add review
+    
+#     checkQuery = '''
+#     SELECT *
+#     FROM Movies
+#     WHERE MovieID = \'''' + movieID + '''\''''
+#     results = db_ops.whole_record(checkQuery)
+#     if (results):
+#         query = '''
+#         INSERT INTO Reviews VALUES(\'''' + reviewID + '''\',\'''' + username + '''\',\'''' + movieID + '''\',\'''' + score + '''\',\'''' + text + '''\')
+#         '''
+#         db_ops.insert_single_record(query)
+#     else:
+#         print("Movie does not exist in database")
     pass
 
 # Special Filtering Options Menu (Basically all of the special/complex queries)

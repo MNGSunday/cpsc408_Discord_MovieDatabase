@@ -114,6 +114,7 @@ class db_operations():
             movieID INT NOT NULL,
             songLength INT,
             ConnorsIncrediblyProfessionalAndPurelyObjectiveRating VARCHAR(30),
+            deleted INT NOT NULL,
             FOREIGN KEY (composerID) REFERENCES Composers(composerID),
             FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             CONSTRAINT CHK_Song CHECK (songLength > 0)
@@ -129,6 +130,7 @@ class db_operations():
             movieID INT NOT NULL,
             score INT NOT NULL,
             text VARCHAR(300),
+            deleted INT NOT NULL,
             FOREIGN KEY (movieID) REFERENCES Movies(movieID),
             CONSTRAINT CHK_Score CHECK (score >= 0 AND score <= 11)
         );
@@ -136,7 +138,7 @@ class db_operations():
         self.cursor.execute(query8)
 
         query9 = '''
-        CREATE TABLE movies_log(
+        CREATE TABLE songs_log(
         user VARCHAR(50),
         action VARCHAR(250)
         );
@@ -144,61 +146,12 @@ class db_operations():
         self.cursor.execute(query9)
 
         query10 = '''
-        CREATE TABLE actors_log(
-        user VARCHAR(50),
-        action VARCHAR(250)
-        );
-        '''
-        self.cursor.execute(query10)
-
-        query11 = '''
-        CREATE TABLE movieactors_log(
-        user VARCHAR(50),
-        action VARCHAR(250)
-        );
-        '''
-        self.cursor.execute(query11)
-
-        query12 = '''
-        CREATE TABLE directors_log(
-        user VARCHAR(50),
-        action VARCHAR(250)
-        );
-        '''
-        self.cursor.execute(query12)
-
-
-        query13 = '''
-        CREATE TABLE composers_log(
-        user VARCHAR(50),
-        action VARCHAR(250)
-        );
-        '''
-        self.cursor.execute(query13)
-
-        query14 = '''
-        CREATE TABLE songs_log(
-        user VARCHAR(50),
-        action VARCHAR(250)
-        );
-        '''
-        self.cursor.execute(query14)
-
-        query15 = '''
-        CREATE TABLE studios_log(
-        user VARCHAR(50),
-        action VARCHAR(250)
-        );
-        '''
-        self.cursor.execute(query15)
-
-        query16 = '''
         CREATE TABLE reviews_log(
         user VARCHAR(50),
         action VARCHAR(250)
         );
         '''
-        self.cursor.execute(query16)
+        self.cursor.execute(query10)
 
         print("Tables Created!")
 

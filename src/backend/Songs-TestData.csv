@@ -1,21 +1,21 @@
-SongID,SongName,ComposerID,MovieID,SongLength,ConnorsIncrediblyProfessionalAndPurelyObjectiveRating
-1,Mater's the Bomb,1,1,197,placeholder
-2,Towkyo Takeout,1,1,340,placeholder
-3,It's Finn McMissile!,1,1,354,placeholder
-4,Tarmac the Magnificent,1,1,159,placeholder
-5,Blunder and Lightning,1,1,137,placeholder
-6,Graduation,2,3,193,placeholder
-7,The Pollen Jocks,2,3,92,placeholder
-8,Rooftop Consequences,2,3,110,placeholder
-9,Barry Turns the Screws,2,3,192,placeholder
-10,Assault on Honey Farms,2,3,153,placeholder
-11,Corelia Chase,4,4,214,placeholder
-12,Gonna Be aAPilot,3,4,29,placeholder
-13,L3 & Millenium Falcon,4,4,196,placeholder
-14,Double-Double Cross,4,4,287,placeholder
-15,Spaceport,4,4,249,placeholder
-16,Casey's Song,5,5,117,placeholder
-17,Drum Battle,5,5,130,placeholder
-18,Overture,5,5,199,placeholder
-19,Too Hip To Retire,5,5,184,placeholder
-20,Dismissed,5,5,166,placeholder
+SongID,SongName,ComposerID,MovieID,SongLength,ConnorsIncrediblyProfessionalAndPurelyObjectiveRating,Deleted
+1,Mater's the Bomb,1,1,197,placeholder,0
+2,Towkyo Takeout,1,1,340,placeholder,0
+3,It's Finn McMissile!,1,1,354,placeholder,0
+4,Tarmac the Magnificent,1,1,159,placeholder,0
+5,Blunder and Lightning,1,1,137,placeholder,0
+6,Graduation,2,3,193,placeholder,0
+7,The Pollen Jocks,2,3,92,placeholder,0
+8,Rooftop Consequences,2,3,110,placeholder,0
+9,Barry Turns the Screws,2,3,192,placeholder,0
+10,Assault on Honey Farms,2,3,153,placeholder,0
+11,Corelia Chase,4,4,214,placeholder,0
+12,Gonna Be aAPilot,3,4,29,placeholder,0
+13,L3 & Millenium Falcon,4,4,196,placeholder,0
+14,Double-Double Cross,4,4,287,placeholder,0
+15,Spaceport,4,4,249,placeholder,0
+16,Casey's Song,5,5,117,placeholder,0
+17,Drum Battle,5,5,130,placeholder,0
+18,Overture,5,5,199,placeholder,0
+19,Too Hip To Retire,5,5,184,placeholder,0
+20,Dismissed,5,5,166,placeholder,0

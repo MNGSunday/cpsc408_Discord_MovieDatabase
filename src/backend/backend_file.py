@@ -110,6 +110,7 @@ def print_menu():
         query = """
         SELECT *
         FROM Songs
+        WHERE deleted = 0
         ORDER BY RAND()
         """
     if table_choice == 7:
@@ -122,6 +123,7 @@ def print_menu():
         query = """
         SELECT *
         FROM Reviews
+        WHERE deleted = 0
         ORDER BY RAND()
         """
 
@@ -470,14 +472,14 @@ def filter_songs(entry_choice):
         query = """
         SELECT songName
         FROM Songs
-        WHERE songLength < 150
+        WHERE songLength < 150 AND deleted = 0
         ORDER BY RAND()
         """
     else:
         query = """
         SELECT songName
         FROM Songs
-        WHERE songLength > 150
+        WHERE songLength > 150 AND deleted = 0
         ORDER BY RAND()
         """
     # User wanted only 1 or 5 results
@@ -522,7 +524,7 @@ def filter_reviews(entry_choice):
         SELECT Movies.name, Reviews.username, Reviews.text
         FROM Reviews
         INNER JOIN Movies ON Movies.movieID = Reviews.movieID
-        WHERE Movies.name = "%s"
+        WHERE Movies.name = "%s" AND Reviews.deleted = 0
         ORDER BY RAND()
         """
         # dictionary = {"selection": choices[name_index]}
@@ -540,7 +542,7 @@ def filter_reviews(entry_choice):
             SELECT Movies.name, Reviews.username, Reviews.text
             FROM Reviews
             INNER JOIN Movies ON Movies.movieID = Reviews.movieID
-            WHERE Reviews.score > 7.5
+            WHERE Reviews.score > 7.5 AND Reviews.deleted = 0
             ORDER BY RAND()
             """
         else:
@@ -548,7 +550,7 @@ def filter_reviews(entry_choice):
             SELECT Movies.name, Reviews.username, Reviews.text
             FROM Reviews
             INNER JOIN Movies ON Movies.movieID = Reviews.movieID
-            WHERE Reviews.score < 7.5
+            WHERE Reviews.score < 7.5 AND Reviews.deleted = 0
             ORDER BY RAND()
             """
         # User wanted only 1 or 5 results

@@ -5,6 +5,16 @@ import mysql.connector
 
 # python backend_file.py
 
+# Creating the schema on locally prior to opening the MovieBot schema via db_operations
+first_conn = mysql.connector.connect(host="localhost",
+    user="root",
+    password="cpsc408",
+    auth_plugin='mysql_native_password')
+
+first_cur = first_conn.cursor()
+first_cur.execute("CREATE SCHEMA IF NOT EXISTS MovieBot;")
+first_conn.close()
+
 # Create db_ops object
 db_ops = db_operations()
 

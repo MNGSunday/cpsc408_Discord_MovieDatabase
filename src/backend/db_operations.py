@@ -140,6 +140,7 @@ class db_operations():
         query9 = '''
         CREATE TABLE songs_log(
         user VARCHAR(50),
+        action_type VARCHAR(10) NOT NULL,
         action VARCHAR(250)
         );
         '''
@@ -148,6 +149,7 @@ class db_operations():
         query10 = '''
         CREATE TABLE reviews_log(
         user VARCHAR(50),
+        action_type VARCHAR(10) NOT NULL,
         action VARCHAR(250)
         );
         '''

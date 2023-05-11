@@ -157,6 +157,7 @@ class db_operations():
 
         print("Tables Created!")
 
+
    #we want cursor to run query and return value of the cell when I run it
     def single_record(self,query):
         self.cursor.execute(query)
@@ -225,3 +226,6 @@ class db_operations():
         self.cursor.execute(query, dictionary)
         self.conn.commit()
         print("delete query executed...")
+
+    def generalized_execute(self, query):
+        self.cursor.execute(query)

@@ -61,6 +61,54 @@ def populate_with_sample_data():
         bulk_data = list(data_df.itertuples(index=False, name=None))
         db_ops.bulk_insert(query, bulk_data)
 
+    
+    movies_view_query = """
+    CREATE VIEW generalizedMoviesView AS
+        SELECT name, runtime, budget, grossProfit, genre, year, pSafeRating
+        FROM movies
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(movies_view_query)
+    
+    actors_view_query = """
+    CREATE VIEW generalizedActorsView AS
+        SELECT name, age, hotness
+        FROM actors
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(actors_view_query)
+
+    composers_view_query = """
+    CREATE VIEW generalizedComposersView AS
+        SELECT name, age
+        FROM composers
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(composers_view_query)
+
+    directors_view_query = """
+    CREATE VIEW generalizedDirectorsView AS
+        SELECT name, age
+        FROM composers
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(directors_view_query)
+
+    songs_view_query = """
+    CREATE VIEW generalizedSongsView AS
+        SELECT songName, songLength, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating
+        FROM songs
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(songs_view_query)
+
+    studios_view_query = """
+    CREATE VIEW generalizedStudiosView AS
+        SELECT name, location
+        FROM studios
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(studios_view_query)
     print("Sample data has been inserted correctly")
 
 
@@ -574,7 +622,6 @@ def filter_reviews(entry_choice):
             results = db_ops.query_all_values(query)
             helper.pretty_print(results)
 
-# HAS NOT BEEN TESTED
 # Picks a random movie for the user to watch
 def randomMoviePicker():
     query = """
@@ -632,6 +679,50 @@ def addReview():
 #         db_ops.insert_single_record(query)
 #     else:
 #         print("Movie does not exist in database")
+    # get names of movies
+    movie_query = """
+    SELECT DISTINCT name
+    FROM Movies;
+    """
+    # Show user genres in database, then get their input
+    print("Movie Titles from Movie database: ")
+    movie_names = db_ops.single_attribute(movie_query)
+
+    choices = {}
+    for i in range(len(movie_names)):
+        print(i, movie_names[i])
+        choices[i] = movie_names[i]
+    index = helper.get_choice(choices.keys())
+
+    movie_id_query  = """
+    SELECT DISTINCT movieID
+    FROM Movies
+    WHERE name = "%s"
+    """
+    movie_result = db_ops.single_record(movie_id_query % movie_names[index])
+    movie_id = movie_result[0]
+
+    username_set = False
+    while (username_set == False):
+        username = input("Please enter the username you want associated with the review: ")
+        if len(username) > 2:
+            username_set = True
+            break
+        else:
+            print("Username must be at least 3 characters. Please try again")
+            continue
+    print("Please enter your score for the movie. This must be an integer from 1 to 10.")
+    score = helper.get_choice([1,2,3,4,5,6,7,8,9,10])
+
+    text_set = False
+    while (text_set == False):
+        text = input("Please enter your review of the movie. This must be at least 3 characters: ")
+        if len(text) > 2:
+            text_set = True
+            break
+        else:
+            print("Review Text must be at least 3 characters. Please try again")
+            continue
     pass
 
 # Special Filtering Options Menu (Basically all of the special/complex queries)
@@ -788,6 +879,52 @@ def directors_by_studio(entry_choice):
     results = db_ops.query_all_values(query % studio_name)
     helper.pretty_print(results)
 
+def view_menu():
+    print(
+        """Which table would you like a general view of?
+    1 - Movies
+    2 - Actors
+    3 - Directors
+    4 - Composers
+    5 - Songs
+    6 - Studios
+    """
+    )
+    table_choice = helper.get_choice([1, 2, 3, 4, 5, 6])
+
+    if table_choice == 1:
+        query = """
+        SELECT *
+        FROM generalizedMoviesView;
+        """
+    if table_choice == 2:
+        query = """
+        SELECT *
+        FROM generalizedActorsView;
+        """
+    if table_choice == 3:
+        query = """
+        SELECT *
+        FROM generalizedDirectorsView;
+        """
+    if table_choice == 4:
+        query = """
+        SELECT *
+        FROM generalizedComposersView;
+        """
+    if table_choice == 5:
+        query = """
+        SELECT *
+        FROM generalizedSongsView;
+        """
+    if table_choice == 6:
+        query = """
+        SELECT *
+        FROM generalizedStudiosView;
+        """
+    results = db_ops.query_all_values(query)
+    helper.pretty_print(results)
+
 # MAIN CODE:
 try:
     populate_with_sample_data()
@@ -800,9 +937,10 @@ while (True):
     2 - Filter tables
     3 - Pick a random movie
     4 - Even more special table filtering
+    5 - Print out generalized view of table 
     0 - Quit
     ''')
-    menu_choice = helper.get_choice([0,1,2,3,4])
+    menu_choice = helper.get_choice([0,1,2,3,4,5])
     if menu_choice == 1:
         print_menu()
         continue
@@ -813,6 +951,8 @@ while (True):
         randomMoviePicker()
     if menu_choice == 4:
         special_filtering_menu()
+    if menu_choice == 5:
+        view_menu()
     if menu_choice == 0:
         break
 db_ops.destructor()

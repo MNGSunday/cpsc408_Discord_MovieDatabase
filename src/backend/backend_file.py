@@ -637,48 +637,90 @@ def randomMoviePicker():
     print("   Title     |  Runtime |    Genre   ")
     helper.pretty_print(results)
 
-# HAS NOT BEEN TESTED
 # Allows a user to add a song to the database
 # Songs(SongID, ComposerID*, MovieID*, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating, SongLength)
 def addSong():
-#def addSong(songID, composerID, movieID, connorsIncrediblyProfessionalAndPurelyObjectiveRating, songLength):
-    # Get the song's title, then composer. If composer doesn't exist yet,
-    # get that info first. Then continue with song's info
+    # get names of movies
+    movie_query = """
+    SELECT DISTINCT name
+    FROM Movies;
+    """
+    # Show user genres in database, then get their input
+    print("Movie Titles from Movie database: ")
+    movie_names = db_ops.single_attribute(movie_query)
 
-    #----------------------------------------NOT TESTED------------------------------------------------------
-    # #what do we do if composerID doesn't exist yet?
-    # checkComposerQuery = '''
-    #     SELECT ComposerID
-    #     FROM Composers
-    # '''
-    
-    # query = '''
-    #     INSERT INTO Songs VALUES(\'''' + songID + '''\',\'''' + composerID + '''\',\'''' + movieID + '''\',\'''' + connorsIncrediblyProfessionalAndPurelyObjectiveRating + '''\',\'''' + songLength + '''\')
-    # '''
-    # db_operations.insert_single_record(query)
-    #----------------------------------------------------------------------------------------------
+    movie_choices = {}
+    for i in range(len(movie_names)):
+        print(i, movie_names[i])
+        movie_choices[i] = movie_names[i]
+    movie_index = helper.get_choice(movie_choices.keys())
 
-    pass
+    movie_id_query  = """
+    SELECT DISTINCT movieID
+    FROM Movies
+    WHERE name = "%s"
+    """
+    movie_result = db_ops.single_record(movie_id_query % movie_names[movie_index])
 
-# HAS NOT BEEN TESTED
+    # get names of composers
+    composer_query = """
+    SELECT DISTINCT name
+    FROM Composers;
+    """
+    # Show user genres in database, then get their input
+    print("Composer names from Composer database: ")
+    composer_names = db_ops.single_attribute(composer_query)
+
+    composer_choices = {}
+    for i in range(len(composer_names)):
+        print(i, composer_names[i])
+        composer_choices[i] = composer_names[i]
+    composer_index = helper.get_choice(composer_choices.keys())
+
+    composer_id_query  = """
+    SELECT DISTINCT composerID
+    FROM Composers
+    WHERE name = "%s"
+    """
+    composer_result = db_ops.single_record(composer_id_query % composer_names[composer_index])
+
+    songname_set = False
+    while (songname_set == False):
+        song_name = input("Please enter the name of the song that you want to add. It must be at least 3 characters and do not include spaces: ")
+        if len(song_name) > 2:
+            songname_set = True
+            break
+        else:
+            print("Username must be at least 3 characters. Please try again")
+            continue
+
+    duration_set = False
+    while (duration_set == False):
+        duration = input("Please enter the duration of the song in minutes. This must be an integer greater than 0: ")
+        if duration.isDigit() == True:
+            if int(duration) > 0:
+                song_length = int(duration)
+                duration_set = True
+                break
+            else:
+                print("Song duration must be longer than 0 minutes")
+                continue
+        else:
+            print("Invalid input. Enter an integer greater than 0.")
+            continue
+        
+    insert_query = """
+    START TRANSACTION;
+    INSERT INTO Songs (songName, composerID, movieID, songLength, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating, deleted)
+    VALUES ("%s", %d, %d, %d, "placeholder", 0);
+    INSERT INTO songs_log VALUES (USER(), 'Insert', 'Inserted song with name: "%s"');
+    COMMIT;
+    """
+    db_ops.generalized_execute(insert_query % (song_name, composer_result, movie_result, song_length, song_name))
+
 # Allows a user to add a review for an existing movie
 #Reviews(ReviewID, Username, MovieID*, Score, Text)
 def addReview():
-# def addReview(reviewID, username, movieID, score, text):
-#     # Check if movie exists, then add review
-    
-#     checkQuery = '''
-#     SELECT *
-#     FROM Movies
-#     WHERE MovieID = \'''' + movieID + '''\''''
-#     results = db_ops.whole_record(checkQuery)
-#     if (results):
-#         query = '''
-#         INSERT INTO Reviews VALUES(\'''' + reviewID + '''\',\'''' + username + '''\',\'''' + movieID + '''\',\'''' + score + '''\',\'''' + text + '''\')
-#         '''
-#         db_ops.insert_single_record(query)
-#     else:
-#         print("Movie does not exist in database")
     # get names of movies
     movie_query = """
     SELECT DISTINCT name
@@ -700,11 +742,10 @@ def addReview():
     WHERE name = "%s"
     """
     movie_result = db_ops.single_record(movie_id_query % movie_names[index])
-    movie_id = movie_result[0]
 
     username_set = False
     while (username_set == False):
-        username = input("Please enter the username you want associated with the review: ")
+        username = input("Please enter the username you want associated with the review. Do not include spaces: ")
         if len(username) > 2:
             username_set = True
             break
@@ -716,14 +757,22 @@ def addReview():
 
     text_set = False
     while (text_set == False):
-        text = input("Please enter your review of the movie. This must be at least 3 characters: ")
-        if len(text) > 2:
+        text = input("Please enter your review of the movie. This must be at least 3 characters and less than 300 characters. Use underscores in place of spaces: ")
+        if len(text) > 2 and len(text) < 300:
             text_set = True
             break
         else:
-            print("Review Text must be at least 3 characters. Please try again")
+            print("Review Text must be at least 3 characters and less than 300 characters. Please try again")
             continue
-    pass
+
+    insert_query = """
+    START TRANSACTION;
+    INSERT INTO Reviews (username, movieID, score, text, deleted)
+    VALUES ("%s", %d, %d, "%s", 0);
+    INSERT INTO reviews_log VALUES (USER(), 'Insert', 'Inserted review with username: "%s"');
+    COMMIT;
+    """
+    db_ops.generalized_execute(insert_query % (username, movie_result, score, text, username))
 
 # Special Filtering Options Menu (Basically all of the special/complex queries)
 def special_filtering_menu():
@@ -938,9 +987,11 @@ while (True):
     3 - Pick a random movie
     4 - Even more special table filtering
     5 - Print out generalized view of table 
+    6 - Add a Song
+    7 - Insert a Review
     0 - Quit
     ''')
-    menu_choice = helper.get_choice([0,1,2,3,4,5])
+    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7])
     if menu_choice == 1:
         print_menu()
         continue
@@ -953,6 +1004,10 @@ while (True):
         special_filtering_menu()
     if menu_choice == 5:
         view_menu()
+    if menu_choice == 6:
+        addSong()
+    if menu_choice == 7:
+        addReview()
     if menu_choice == 0:
         break
 db_ops.destructor()

@@ -794,6 +794,63 @@ def updateSongDuration():
     """
     db_ops.generalized_execute(update_query % (song_length, song_ID, song_ID, old_duration, song_length))
 
+def deleteSong():
+    # Obtain reviewID from user
+    id_set = False
+    while (id_set == False):
+        id_input = input("Please enter the ID of the song you would like to delete. This must be an integer greater than 0: ")
+        if id_input.isdigit() == True:
+            if int(id_input) > 0:
+                search_id = int(id_input)
+                search_query = """
+                SELECT COUNT(DISTINCT songID)
+                FROM Songs
+                WHERE songID = %d AND deleted = 0;
+                """
+                search_result = db_ops.single_record(search_query % search_id)
+                # Id does not exist or Id belongs to a deleted Song
+                if search_result == 0:
+                    print("Song does not exist or has been deleted. please try again.")
+                    continue
+                # Id exists within database
+                else:
+                    print("Id found...")
+                    id_set = True
+                    song_id = search_id
+                    break
+            else:
+                print("Song ID must be greater than 0.")
+                continue
+        else:
+            print("Invalid input. Enter an integer greater than 0.")
+            continue
+    
+    print("Song to be deleted: ")
+    query = """
+    SELECT *
+    FROM Songs
+    WHERE songID = %d AND deleted = 0;
+    """
+    result = db_ops.whole_record(query % song_id)
+    helper.pretty_print(result)
+    print("""Are you sure you want to delete this?
+    1 - Yes
+    0 - No
+    """)
+    user_choice = helper.get_choice([0,1])
+    if user_choice == 1:
+        delete_query = """
+        START TRANSACTION;
+        UPDATE Songs
+        SET deleted = 1
+        WHERE songID = %d AND deleted = 0;
+        INSERT INTO songs_log VALUES (USER(), "Delete", "Soft deleted song with ID: %d");
+        COMMIT;
+        """
+        db_ops.generalized_execute(delete_query % (song_id, song_id))
+    else:
+        print("Returning to main menu...")
+
 # Allows a user to add a review for an existing movie
 #Reviews(ReviewID, Username, MovieID*, Score, Text)
 def addReview():
@@ -901,6 +958,63 @@ def updateReviewText():
     """
     db_ops.generalized_execute(update_query % (text, review_id, review_id, text))
 
+
+def deleteReview():
+    # Obtain reviewID from user
+    id_set = False
+    while (id_set == False):
+        id_input = input("Please enter the ID of the review you would like to delete. This must be an integer greater than 0: ")
+        if id_input.isdigit() == True:
+            if int(id_input) > 0:
+                search_id = int(id_input)
+                search_query = """
+                SELECT COUNT(DISTINCT reviewID)
+                FROM Reviews
+                WHERE reviewID = %d AND deleted = 0;
+                """
+                search_result = db_ops.single_record(search_query % search_id)
+                # Id does not exist or Id belongs to a deleted Review
+                if search_result == 0:
+                    print("Review does not exist or has been deleted. please try again.")
+                    continue
+                # Id exists within database
+                else:
+                    print("Id found...")
+                    id_set = True
+                    review_id = search_id
+                    break
+            else:
+                print("Review ID must be greater than 0.")
+                continue
+        else:
+            print("Invalid input. Enter an integer greater than 0.")
+            continue
+    
+    print("Review to be deleted: ")
+    query = """
+    SELECT *
+    FROM Reviews
+    WHERE reviewID = %d AND deleted = 0;
+    """
+    result = db_ops.whole_record(query % review_id)
+    helper.pretty_print(result)
+    print("""Are you sure you want to delete this?
+    1 - Yes
+    0 - No
+    """)
+    user_choice = helper.get_choice([0,1])
+    if user_choice == 1:
+        delete_query = """
+        START TRANSACTION;
+        UPDATE Reviews
+        SET deleted = 1
+        WHERE reviewID = %d AND deleted = 0;
+        INSERT INTO reviews_log VALUES (USER(), "Delete", "Soft deleted review with ID: %d");
+        COMMIT;
+        """
+        db_ops.generalized_execute(delete_query % (review_id, review_id))
+    else:
+        print("Returning to main menu...")
 
 # Special Filtering Options Menu (Basically all of the special/complex queries)
 def special_filtering_menu():
@@ -1123,11 +1237,13 @@ while (True):
     5 - Print out generalized view of table 
     6 - Add a Song
     7 - Update a Song's Duration
-    8 - Insert a Review
-    9 - Update a Review's Text
+    8 - Delete a Song
+    9 - Insert a Review
+    10 - Update a Review's Text
+    11 - Delete a Review
     0 - Quit
     ''')
-    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7,8,9])
+    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7,8,9,10,11])
     if menu_choice == 1:
         print_menu()
         continue
@@ -1145,9 +1261,13 @@ while (True):
     if menu_choice == 7:
         updateSongDuration()
     if menu_choice == 8:
-        addReview()
+        deleteSong()
     if menu_choice == 9:
+        addReview()
+    if menu_choice == 10:
         updateReviewText()
+    if menu_choice == 11:
+        deleteReview()
     if menu_choice == 0:
         break
 db_ops.destructor()

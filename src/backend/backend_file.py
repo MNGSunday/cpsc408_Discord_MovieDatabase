@@ -896,7 +896,7 @@ def updateReviewText():
     UPDATE Reviews
     SET text = "%s"
     WHERE reviewID = %d;
-    INSERT INTO reviews_log VALUES (USER(), 'UPDATE', 'Updated reviewID %d's text to: %s');
+    INSERT INTO reviews_log VALUES (USER(), "UPDATE", "Updated reviewID %d's text to: %s");
     COMMIT;
     """
     db_ops.generalized_execute(update_query % (text, review_id, review_id, text))

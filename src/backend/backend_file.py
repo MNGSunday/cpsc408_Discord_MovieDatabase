@@ -98,6 +98,7 @@ def populate_with_sample_data():
     CREATE VIEW generalizedSongsView AS
         SELECT songName, songLength, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating
         FROM songs
+        WHERE deleted = 0
         ORDER BY RAND();
     """
     db_ops.generalized_execute(songs_view_query)
@@ -109,6 +110,16 @@ def populate_with_sample_data():
         ORDER BY RAND();
     """
     db_ops.generalized_execute(studios_view_query)
+
+    reviews_view_query = """
+    CREATE VIEW generalizedReviewsView AS
+        SELECT Reviews.username, Movies.name, Reviews.score, Reviews.text
+        FROM Reviews
+        INNER JOIN Movies ON Movies.movieID = Reviews.movieID
+        WHERE deleted = 0
+        ORDER BY RAND();
+    """
+    db_ops.generalized_execute(songs_view_query)
     print("Sample data has been inserted correctly")
 
 
@@ -697,7 +708,7 @@ def addSong():
     duration_set = False
     while (duration_set == False):
         duration = input("Please enter the duration of the song in minutes. This must be an integer greater than 0: ")
-        if duration.isDigit() == True:
+        if duration.isdigit() == True:
             if int(duration) > 0:
                 song_length = int(duration)
                 duration_set = True
@@ -717,6 +728,71 @@ def addSong():
     COMMIT;
     """
     db_ops.generalized_execute(insert_query % (song_name, composer_result, movie_result, song_length, song_name))
+
+def updateSongDuration():
+    id_set = False
+    while (id_set == False):
+        id_input = input("Please enter the ID of the song you would like to edit. This must be an integer greater than 0: ")
+        if id_input.isdigit() == True:
+            if int(id_input) > 0:
+                search_id = int(id_input)
+                search_query = """
+                SELECT COUNT(DISTINCT songID)
+                FROM Songs
+                WHERE songID = %d AND deleted = 0;
+                """
+                search_result = db_ops.single_record(search_query % search_id)
+                # Id does not exist or Id belongs to a deleted Song
+                if search_result == 0:
+                    print("Song does not exist or has been deleted. please try again.")
+                    continue
+                # Id exists within database
+                else:
+                    print("Id found...")
+                    id_set = True
+                    song_ID = search_id
+                    break
+            else:
+                print("Song ID must be greater than 0.")
+                continue
+        else:
+            print("Invalid input. Enter an integer greater than 0.")
+            continue
+    
+    duration_set = False
+    while (duration_set == False):
+        duration = input("Please enter the new duration of the song in minutes. This must be an integer greater than 0: ")
+        if duration.isdigit() == True:
+            if int(duration) > 0:
+                song_length = int(duration)
+                duration_set = True
+                break
+            else:
+                print("Song's new duration must be longer than 0 minutes")
+                continue
+        else:
+            print("Invalid input. Enter an integer greater than 0.")
+            continue
+
+    # obtain old song duration for log table
+    log_duration = """
+    SELECT songLength
+    FROM SONGS
+    WHERE songID = %d
+    """
+    old_duration = db_ops.single_record(log_duration % song_ID)
+
+    # Transaction to update Song Duration and Logs old value
+    update_query = """
+    START TRANSACTION;
+    UPDATE Songs
+    SET
+        songLength = %d
+    WHERE songID = %d;
+    INSERT INTO songs_log VALUES (USER(), "Update","Updates songID %d's length from %d to %d");
+    COMMIT;
+    """
+    db_ops.generalized_execute(update_query % (song_length, song_ID, song_ID, old_duration, song_length))
 
 # Allows a user to add a review for an existing movie
 #Reviews(ReviewID, Username, MovieID*, Score, Text)
@@ -773,6 +849,58 @@ def addReview():
     COMMIT;
     """
     db_ops.generalized_execute(insert_query % (username, movie_result, score, text, username))
+
+def updateReviewText():
+    # Obtain reviewID from user
+    id_set = False
+    while (id_set == False):
+        id_input = input("Please enter the ID of the review you would like to edit. This must be an integer greater than 0: ")
+        if id_input.isdigit() == True:
+            if int(id_input) > 0:
+                search_id = int(id_input)
+                search_query = """
+                SELECT COUNT(DISTINCT reviewID)
+                FROM Reviews
+                WHERE reviewID = %d AND deleted = 0;
+                """
+                search_result = db_ops.single_record(search_query % search_id)
+                # Id does not exist or Id belongs to a deleted Review
+                if search_result == 0:
+                    print("Review does not exist or has been deleted. please try again.")
+                    continue
+                # Id exists within database
+                else:
+                    print("Id found...")
+                    id_set = True
+                    review_id = search_id
+                    break
+            else:
+                print("Review ID must be greater than 0.")
+                continue
+        else:
+            print("Invalid input. Enter an integer greater than 0.")
+            continue
+    
+    text_set = False
+    while (text_set == False):
+        text = input("Please enter the new review of the movie. This must be at least 3 characters and less than 300 characters. Use underscores in place of spaces: ")
+        if len(text) > 2 and len(text) < 300:
+            text_set = True
+            break
+        else:
+            print("New Review Text must be at least 3 characters and less than 300 characters. Please try again")
+            continue
+
+    update_query = """
+    START TRANSACTION;
+    UPDATE Reviews
+    SET text = "%s"
+    WHERE reviewID = %d;
+    INSERT INTO reviews_log VALUES (USER(), 'UPDATE', 'Updated reviewID %d's text to: %s');
+    COMMIT;
+    """
+    db_ops.generalized_execute(update_query % (text, review_id, review_id, text))
+
 
 # Special Filtering Options Menu (Basically all of the special/complex queries)
 def special_filtering_menu():
@@ -930,16 +1058,17 @@ def directors_by_studio(entry_choice):
 
 def view_menu():
     print(
-        """Which table would you like a general view of?
+    """Which table would you like a general view of?
     1 - Movies
     2 - Actors
     3 - Directors
     4 - Composers
     5 - Songs
     6 - Studios
+    7 - Reviews
     """
     )
-    table_choice = helper.get_choice([1, 2, 3, 4, 5, 6])
+    table_choice = helper.get_choice([1, 2, 3, 4, 5, 6, 7])
 
     if table_choice == 1:
         query = """
@@ -971,6 +1100,11 @@ def view_menu():
         SELECT *
         FROM generalizedStudiosView;
         """
+    if table_choice == 7:
+        query = """
+        SELECT *
+        FROM generalizedReviewsView;
+        """
     results = db_ops.query_all_values(query)
     helper.pretty_print(results)
 
@@ -988,10 +1122,12 @@ while (True):
     4 - Even more special table filtering
     5 - Print out generalized view of table 
     6 - Add a Song
-    7 - Insert a Review
+    7 - Update a Song's Duration
+    8 - Insert a Review
+    9 - Update a Review's Text
     0 - Quit
     ''')
-    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7])
+    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7,8,9])
     if menu_choice == 1:
         print_menu()
         continue
@@ -1007,7 +1143,11 @@ while (True):
     if menu_choice == 6:
         addSong()
     if menu_choice == 7:
+        updateSongDuration()
+    if menu_choice == 8:
         addReview()
+    if menu_choice == 9:
+        updateReviewText()
     if menu_choice == 0:
         break
 db_ops.destructor()

@@ -1170,6 +1170,21 @@ def directors_by_studio(entry_choice):
     results = db_ops.query_all_values(query % studio_name)
     helper.pretty_print(results)
 
+#------------------------NOT TESTED ========================
+def downloadEntity(nameOfEntity):
+    downloadEntityQuery = """
+    SELECT *
+    FROM %s
+    INTO OUTFILE 'C:/' 
+    FIELDS ENCLOSED BY '"' 
+    TERMINATED BY ';' 
+    ESCAPED BY '"' 
+    LINES TERMINATED BY '\r\n';
+    """
+    db_ops.whole_record(downloadEntityQuery % nameOfEntity)
+#------------------------NOT TESTED ========================
+
+
 def view_menu():
     print(
     """Which table would you like a general view of?

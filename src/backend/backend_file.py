@@ -1171,17 +1171,69 @@ def directors_by_studio(entry_choice):
     helper.pretty_print(results)
 
 #------------------------NOT TESTED ========================
-def downloadEntity(nameOfEntity):
-    downloadEntityQuery = """
-    SELECT *
-    FROM %s
-    INTO OUTFILE 'C:/' 
+def downloadEntity():
+    print(
+        """What data would you like exported to a file?
+    1 - Movies
+    2 - Actors
+    3 - MovieActors
+    4 - Directors
+    5 - Composers
+    6 - Songs
+    7 - Studios
+    8 - Reviews
+    """
+    )
+    table_choice = helper.get_choice([1, 2, 3, 4, 5, 6, 7, 8])
+    if table_choice == 1:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Movies 
+        """
+    if table_choice == 2:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Actors 
+        """
+    if table_choice == 3:
+        downloadEntityQuery = """
+        SELECT *
+        FROM MovieActors
+        """
+    if table_choice == 4:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Directors
+        """
+    if table_choice == 5:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Composers
+        """
+    if table_choice == 6:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Songs
+        """
+    if table_choice == 7:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Studios
+        """
+    if table_choice == 8:
+        downloadEntityQuery = """
+        SELECT *
+        FROM Reviews
+        """
+    nameOfEntity = input("Please enter the filepath of where the data will be downloaded to: ")
+    downloadEntityQuery += """
+    INTO OUTFILE '%s' 
     FIELDS ENCLOSED BY '"' 
     TERMINATED BY ';' 
     ESCAPED BY '"' 
     LINES TERMINATED BY '\r\n';
     """
-    db_ops.whole_record(downloadEntityQuery % nameOfEntity)
+    db_ops.generalized_execute(downloadEntityQuery % nameOfEntity)
 #------------------------NOT TESTED ========================
 
 
@@ -1256,9 +1308,10 @@ while (True):
     9 - Insert a Review
     10 - Update a Review's Text
     11 - Delete a Review
+    12 - Export to File
     0 - Quit
     ''')
-    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7,8,9,10,11])
+    menu_choice = helper.get_choice([0,1,2,3,4,5,6,7,8,9,10,11,12])
     if menu_choice == 1:
         print_menu()
         continue
@@ -1283,6 +1336,8 @@ while (True):
         updateReviewText()
     if menu_choice == 11:
         deleteReview()
+    if menu_choice == 12:
+        downloadEntity()
     if menu_choice == 0:
         break
 db_ops.destructor()

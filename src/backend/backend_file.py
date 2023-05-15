@@ -1,6 +1,7 @@
 from helper import helper
 from db_operations import db_operations
 import pandas as pd
+import numpy as np
 import mysql.connector
 
 # python backend_file.py
@@ -1170,8 +1171,9 @@ def directors_by_studio(entry_choice):
     results = db_ops.query_all_values(query % studio_name)
     helper.pretty_print(results)
 
-#------------------------NOT TESTED ========================
+# Enables the user to save table data to a txt file
 def downloadEntity():
+    # Ask the user what table they want to export as a file
     print(
         """What data would you like exported to a file?
     1 - Movies
@@ -1185,57 +1187,130 @@ def downloadEntity():
     """
     )
     table_choice = helper.get_choice([1, 2, 3, 4, 5, 6, 7, 8])
+
     if table_choice == 1:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Movies'
+        """
+
         downloadEntityQuery = """
         SELECT *
         FROM Movies 
         """
+
     if table_choice == 2:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Actors'
+        """
+
         downloadEntityQuery = """
         SELECT *
         FROM Actors 
         """
+
     if table_choice == 3:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='MovieActors'
+        """
+        
         downloadEntityQuery = """
         SELECT *
         FROM MovieActors
         """
+
     if table_choice == 4:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Directors'
+        """
+
         downloadEntityQuery = """
         SELECT *
         FROM Directors
         """
+
     if table_choice == 5:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Composers'
+        """
+        
         downloadEntityQuery = """
         SELECT *
         FROM Composers
         """
+
     if table_choice == 6:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Songs'
+        """
+        
         downloadEntityQuery = """
         SELECT *
         FROM Songs
         """
+
     if table_choice == 7:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Studios'
+        """
+        
         downloadEntityQuery = """
         SELECT *
         FROM Studios
         """
+
     if table_choice == 8:
+        # query to obtain column names
+        columnQuery = """
+        SELECT COLUMN_NAME 
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_NAME='Reviews'
+        """
+
         downloadEntityQuery = """
         SELECT *
         FROM Reviews
         """
-    nameOfEntity = input("Please enter the filepath of where the data will be downloaded to: ")
-    downloadEntityQuery += """
-    INTO OUTFILE '%s' 
-    FIELDS ENCLOSED BY '"' 
-    TERMINATED BY ';' 
-    ESCAPED BY '"' 
-    LINES TERMINATED BY '\r\n';
-    """
-    db_ops.generalized_execute(downloadEntityQuery % nameOfEntity)
-#------------------------NOT TESTED ========================
+    # Obtain the file that the user wants to save the data to    
+    nameOfEntity = input("Please enter the name of the file that the data will be exported to: ")
 
+    # Obtain names of the columns
+    result1 = db_ops.whole_record(columnQuery)
+
+    # Clean up column names to be able to add them to the text file
+    columns = []
+    for record in result1:
+        columns.append(record[0])
+    column_names = tuple(columns)
+
+    # Obtain each of the rows
+    result = db_ops.query_all_values(downloadEntityQuery)
+
+    # Add the column names to the beginning of the data
+    result.insert(0, column_names)
+
+    # Export the data to the file, separating each value with a comma and ending each line with newline
+    np.savetxt(nameOfEntity, result, delimiter=',', newline='\n',fmt='%s')
 
 def view_menu():
     print(

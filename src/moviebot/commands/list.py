@@ -77,7 +77,15 @@ class ListCommands(commands.Cog):
     @option(
         "entity",
         description="The entity you want to list",
-        choices=["movies", "actors", "directors", "composers", "songs", "studios"],
+        choices=[
+            "movies",
+            "actors",
+            "directors",
+            "composers",
+            "songs",
+            "studios",
+            "reviews",
+        ],
     )
     async def list_command(self, ctx: discord.ApplicationContext, entity: str):
         paginated_data = None
@@ -94,6 +102,8 @@ class ListCommands(commands.Cog):
             paginated_data = self.bot.songs_dao.list()
         elif entity == "studios":
             paginated_data = self.bot.studios_dao.list()
+        elif entity == "reviews":
+            paginated_data = self.bot.reviews_dao.list()
         else:
             raise ValueError("Invalid entity")
 

@@ -2,7 +2,15 @@ from discord.ext import commands
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
-from .dao import ActorsDAO, ComposersDAO, DirectorsDAO, MoviesDAO, SongsDAO, StudiosDAO
+from .dao import (
+    ActorsDAO,
+    ComposersDAO,
+    DirectorsDAO,
+    MoviesDAO,
+    SongsDAO,
+    StudiosDAO,
+    ReviewsDAO,
+)
 
 
 class AbstractMovieBot(commands.Bot):
@@ -16,3 +24,4 @@ class AbstractMovieBot(commands.Bot):
         self.composers_dao = ComposersDAO(db)
         self.songs_dao = SongsDAO(db)
         self.studios_dao = StudiosDAO(db)
+        self.reviews_dao = ReviewsDAO(db)

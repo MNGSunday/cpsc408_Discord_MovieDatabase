@@ -20,7 +20,8 @@ class ReviewsDAO:
     def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Review]:
         with self.db.cursor(named_tuple=True) as cursor:
             cursor.execute(
-                "SELECT * FROM Reviews ORDER BY reviewID LIMIT %s, %s;", (offset, limit)
+                "SELECT * FROM Reviews WHERE deleted = 0 ORDER BY reviewID LIMIT %s, %s;",
+                (offset, limit),
             )
             return PaginatedData[Review](
                 data=[

@@ -62,7 +62,38 @@ def populate_with_sample_data():
         bulk_data = list(data_df.itertuples(index=False, name=None))
         db_ops.bulk_insert(query, bulk_data)
 
-    
+    movies_with_director_composer_studio_query = """
+    CREATE VIEW movies_with_director_composer_studio AS
+    SELECT
+      m.movieID,
+      m.name as movieName,
+      m.directorID,
+      m.composerID,
+      m.studioID,
+      m.runtime,
+      m.budget,
+      m.grossProfit,
+      m.criticScore,
+      m.viewerScore,
+      m.genre,
+      m.year,
+      m.nominatedForAward,
+      m.pSafeRating,
+      d.name AS directorName,
+      d.age AS directorAge,
+      c.name AS composerName,
+      c.age AS composerAge,
+      c.movieCount AS composerMovieCount,
+      s.name AS studioName,
+      s.location AS studioLocation
+    FROM
+      Movies as m
+      INNER JOIN Directors as d ON m.directorID = d.directorID
+      INNER JOIN Composers as c ON m.composerID = c.composerID
+      INNER JOIN Studios as s ON m.studioID = s.studioID;
+    """
+    db_ops.generalized_execute(movies_with_director_composer_studio_query)
+
     movies_view_query = """
     CREATE VIEW generalizedMoviesView AS
         SELECT name, runtime, budget, grossProfit, genre, year, pSafeRating

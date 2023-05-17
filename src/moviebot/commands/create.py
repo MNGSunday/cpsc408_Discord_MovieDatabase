@@ -38,3 +38,29 @@ class CreateCommands(commands.Cog):
         )
 
         await ctx.response.send_message("Song created", embed=embed, ephemeral=True)
+
+    @create_commands.command(name="review", description="Write a review")
+    async def create_review(
+        self,
+        ctx: discord.ApplicationContext,
+        movie_id: int,
+        score: int,
+        text: str,
+    ):
+        review = self.bot.reviews_dao.create(
+            username=ctx.user.name,
+            movie_id=movie_id,
+            score=score,
+            text=text,
+        )
+
+        movie = self.bot.movies_dao.get_by_id(review.movie_id)
+        if movie is None:
+            raise ValueError(f"Review has invalid movie foreign key")
+
+        embed = discord.Embed()
+        embed.add_field(name="Movie", value=movie.name, inline=False)
+        embed.add_field(name="Score", value=str(review.score), inline=False)
+        embed.add_field(name="Review", value=review.text, inline=False)
+
+        await ctx.response.send_message(embed=embed, ephemeral=True)

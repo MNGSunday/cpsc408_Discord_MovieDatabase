@@ -66,3 +66,15 @@ class ReviewsDAO:
                 text=text,
                 deleted=False,
             )
+
+    def update(self, review_id: int, new_text: str):
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                "UPDATE Reviews SET text = %s WHERE reviewID = %s AND deleted = 0;",
+                (new_text, review_id),
+            )
+            self.db.commit()
+            updated_review = self.get_by_id(review_id)
+            if updated_review is None:
+                raise ValueError(f"Couldn't fetch updated review with id {review_id}")
+            return updated_review

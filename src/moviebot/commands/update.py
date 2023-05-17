@@ -34,3 +34,22 @@ class UpdateCommands(commands.Cog):
             value=str(song.connors_incredibly_professional_and_purely_objective_rating),
         )
         await ctx.response.send_message(embed=embed, ephemeral=True)
+
+    @update_commands.command(name="review", description="Update a review")
+    async def update_review(
+        self,
+        ctx: discord.ApplicationContext,
+        review_id: int,
+        new_text: str,
+    ):
+        review = self.bot.reviews_dao.update(review_id=review_id, new_text=new_text)
+
+        movie = self.bot.movies_dao.get_by_id(review.movie_id)
+        if movie is None:
+            raise ValueError(f"Review has invalid movie foreign key")
+
+        embed = discord.Embed()
+        embed.add_field(name="Movie", value=movie.name, inline=False)
+        embed.add_field(name="Score", value=str(review.score), inline=False)
+        embed.add_field(name="Review", value=review.text, inline=False)
+        await ctx.response.send_message(embed=embed, ephemeral=True)

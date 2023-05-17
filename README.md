@@ -6,14 +6,21 @@
 
 1. Create discord bot in discord developer dashboard and invite bot to your server
 2. Check out `CONTRIBUTING.md` to set up environment
-3. Start up mysql server and load MovieBot database within mysql shell
+3. Start up mysql server and create MovieBot database in mysql shell
+
+```shell
+mysql> create database MovieBot;
+mysql> use MovieBot;
+```
+
+4. load MovieBot database
 
 ```shell
 mysql> source ./dump.sql
 ```
 
-4. Run `src/bot.py`
-5. Run commands in discord
+5. Run `src/bot.py`
+6. Run commands in discord
 
 ## Requirements
 

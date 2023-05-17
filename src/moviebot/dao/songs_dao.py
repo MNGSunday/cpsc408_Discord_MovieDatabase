@@ -31,7 +31,7 @@ class SongsDAO:
 
     def get_by_id(self, song_id: int) -> Song | None:
         with self.db.cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM Songs WHERE songID = %s;", (song_id,))
+            cursor.execute("SELECT * FROM Songs WHERE songID = %s AND deleted = 0;", (song_id,))
             res = cursor.fetchone()
             if res is None:
                 return None

@@ -48,3 +48,21 @@ class ReviewsDAO:
                 total=self.count(),
                 paginate=self.list,
             )
+
+    def create(self, username: str, movie_id: int, score: int, text: str):
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Reviews (username, movieID, score, text, deleted) VALUES (%s, %s, %s, %s, %s);",
+                (username, movie_id, score, text, 0),
+            )
+            self.db.commit()
+            if cursor.lastrowid is None:
+                raise ValueError("Couldn't fetch last inserted movie review")
+            return Review(
+                review_id=cursor.lastrowid,
+                username=username,
+                movie_id=movie_id,
+                score=score,
+                text=text,
+                deleted=False,
+            )

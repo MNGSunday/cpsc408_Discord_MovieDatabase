@@ -1,4 +1,13 @@
 # cpsc408_Discord_MovieDatabase
+## Submission Info
+### Group members:
+- Christopher Youn, Student ID:
+- Gabriel Garcia, Student ID:
+- Connor Martindale, Student ID:
+- Marc Domingo, Student ID: 2346778
+### Course Info:
+- Course: CPSC 408-01
+- Assignment: Final Project
 
 ## Set Up
 

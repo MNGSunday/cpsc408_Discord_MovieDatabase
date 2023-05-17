@@ -45,3 +45,17 @@ class RecommendMoviesCommands(commands.Cog):
 
         paginated_table_view = PaginatedTableView(paginated_data=movies)
         await paginated_table_view.send(ctx)
+
+    @recommend_movies_commands.command(
+        name="with_budget_gt_dir_avg_budget",
+        description="Gets movies with budgets greater than the director's mean budget",
+    )
+    async def with_budget_gt_director_mean_budget(
+        self,
+        ctx: discord.ApplicationContext,
+    ):
+        movies = (
+            self.bot.movies_dao.get_movies_where_budget_greater_than_director_mean_budget()
+        )
+        paginated_table_view = PaginatedTableView(paginated_data=movies)
+        await paginated_table_view.send(ctx)

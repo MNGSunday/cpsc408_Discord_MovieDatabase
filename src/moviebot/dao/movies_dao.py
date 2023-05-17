@@ -134,6 +134,33 @@ class MoviesDAO:
                 paginate=lambda offset, limit: self.get_movies(genre, offset, limit),
             )
 
+    def get_movies_where_budget_greater_than_director_mean_budget(
+        self, offset: int = 0, limit: int = 5
+    ) -> PaginatedData[Movie]:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "SELECT COUNT(*) as total FROM movies_with_director_composer_studio as m INNER JOIN ( SELECT directorID, directorName, AVG(grossProfit) as avgDirectorGrossProfit FROM movies_with_director_composer_studio as m GROUP BY directorID) as directorAvgGrossProfit ON m.directorID = directorAvgGrossProfit.directorID WHERE grossProfit >= avgDirectorGrossProfit;",
+            )
+            res = cursor.fetchone()
+            if res is None:
+                raise ValueError("No count returned")
+            total = res.total
+
+            cursor.execute(
+                "SELECT m.* FROM movies_with_director_composer_studio as m INNER JOIN ( SELECT directorID, directorName, AVG(grossProfit) as avgDirectorGrossProfit FROM movies_with_director_composer_studio as m GROUP BY directorID) as directorAvgGrossProfit ON m.directorID = directorAvgGrossProfit.directorID WHERE grossProfit >= avgDirectorGrossProfit ORDER BY movieID LIMIT %s, %s;",
+                (offset, limit),
+            )
+            return PaginatedData[Movie](
+                data=[
+                    Movie.from_named_tuple(movie_named_tuple)
+                    for movie_named_tuple in cursor.fetchall()
+                ],
+                offset=offset,
+                limit=limit,
+                total=total,
+                paginate=self.get_movies_where_budget_greater_than_director_mean_budget,
+            )
+
     def create(
         self,
         name: str,

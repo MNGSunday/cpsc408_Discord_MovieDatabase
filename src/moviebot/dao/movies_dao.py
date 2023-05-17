@@ -77,6 +77,34 @@ class MoviesDAO:
                 paginate=lambda _, limit: self.get_random_movies(limit),
             )
 
+    def get_movies_by_genre(
+        self, genre: str, offset: int = 0, limit: int = 5
+    ) -> PaginatedData[Movie]:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "SELECT COUNT(*) as total FROM movies_with_director_composer_studio WHERE genre = %s ORDER BY movieID;",
+                (genre,),
+            )
+            res = cursor.fetchone()
+            if res is None:
+                raise ValueError("No count returned")
+            total = res.total
+
+            cursor.execute(
+                "SELECT * FROM movies_with_director_composer_studio WHERE genre = %s ORDER BY movieID LIMIT %s;",
+                (genre, limit),
+            )
+            return PaginatedData[Movie](
+                data=[
+                    Movie.from_named_tuple(movie_named_tuple)
+                    for movie_named_tuple in cursor.fetchall()
+                ],
+                offset=offset,
+                limit=limit,
+                total=total,
+                paginate=lambda _, limit: self.get_movies_by_genre(genre, limit),
+            )
+
     def create(
         self,
         name: str,

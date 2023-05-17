@@ -60,6 +60,23 @@ class MoviesDAO:
                 paginate=self.list,
             )
 
+    def get_random_movies(self, limit: int = 5) -> PaginatedData[Movie]:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "SELECT * FROM movies_with_director_composer_studio ORDER BY RAND() LIMIT %s;",
+                (limit,),
+            )
+            return PaginatedData[Movie](
+                data=[
+                    Movie.from_named_tuple(movie_named_tuple)
+                    for movie_named_tuple in cursor.fetchall()
+                ],
+                offset=0,
+                limit=limit,
+                total=limit,
+                paginate=lambda _, limit: self.get_random_movies(limit),
+            )
+
     def create(
         self,
         name: str,

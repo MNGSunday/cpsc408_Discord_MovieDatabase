@@ -42,7 +42,8 @@ class SongsDAO:
     def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Song]:
         with self.db.cursor(named_tuple=True) as cursor:
             cursor.execute(
-                "SELECT * FROM Songs ORDER BY songID LIMIT %s, %s;", (offset, limit)
+                "SELECT * FROM Songs WHERE deleted = 0 ORDER BY songID LIMIT %s, %s;",
+                (offset, limit),
             )
             return PaginatedData[Song](
                 data=[

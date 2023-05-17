@@ -28,7 +28,7 @@ class DeleteCommands(commands.Cog):
         ctx: discord.ApplicationContext,
         review_id: int,
     ):
-        self.bot.reviews_dao.delete(review_id=review_id)
+        self.bot.reviews_dao.delete(username=ctx.author.name, review_id=review_id)
 
         await ctx.response.send_message(
             f"Deleted review with id {review_id}", ephemeral=True

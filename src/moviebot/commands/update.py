@@ -44,7 +44,9 @@ class UpdateCommands(commands.Cog):
         review_id: int,
         new_text: str,
     ):
-        review = self.bot.reviews_dao.update(review_id=review_id, new_text=new_text)
+        review = self.bot.reviews_dao.update(
+            username=ctx.author.name, review_id=review_id, new_text=new_text
+        )
 
         movie = self.bot.movies_dao.get_by_id(review.movie_id)
         if movie is None:

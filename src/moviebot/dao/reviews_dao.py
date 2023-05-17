@@ -1,5 +1,6 @@
 from typing import List
 
+import mysql.connector
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
@@ -51,11 +52,23 @@ class ReviewsDAO:
 
     def create(self, username: str, movie_id: int, score: int, text: str):
         with self.db.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO Reviews (username, movieID, score, text, deleted) VALUES (%s, %s, %s, %s, %s);",
-                (username, movie_id, score, text, 0),
-            )
-            self.db.commit()
+            try:
+                cursor.execute(
+                    "INSERT INTO Reviews (username, movieID, score, text, deleted) VALUES (%s, %s, %s, %s, %s);",
+                    (username, movie_id, score, text, 0),
+                )
+                cursor.execute(
+                    "INSERT INTO reviews_log VALUES (%s, %s, %s)",
+                    (
+                        username,
+                        "Insert",
+                        f"Inserted review with id: {cursor.lastrowid}",
+                    ),
+                )
+                self.db.commit()
+            except mysql.connector.Error as error:
+                self.db.rollback()
+                raise RuntimeError("Couldn't insert review and rolled back: ", error)
             if cursor.lastrowid is None:
                 raise ValueError("Couldn't fetch last inserted movie review")
             return Review(
@@ -67,22 +80,46 @@ class ReviewsDAO:
                 deleted=False,
             )
 
-    def update(self, review_id: int, new_text: str):
+    def update(self, username: str, review_id: int, new_text: str):
         with self.db.cursor() as cursor:
-            cursor.execute(
-                "UPDATE Reviews SET text = %s WHERE reviewID = %s AND deleted = 0;",
-                (new_text, review_id),
-            )
-            self.db.commit()
+            try:
+                cursor.execute(
+                    "UPDATE Reviews SET text = %s WHERE reviewID = %s AND deleted = 0;",
+                    (new_text, review_id),
+                )
+                cursor.execute(
+                    "INSERT INTO reviews_log VALUES (%s, %s, %s)",
+                    (
+                        username,
+                        "Update",
+                        f"Updated review with id: {cursor.lastrowid}",
+                    ),
+                )
+                self.db.commit()
+            except mysql.connector.Error as error:
+                self.db.rollback()
+                raise RuntimeError("Couldn't update review and rolled back: ", error)
             updated_review = self.get_by_id(review_id)
             if updated_review is None:
                 raise ValueError(f"Couldn't fetch updated review with id {review_id}")
             return updated_review
 
-    def delete(self, review_id: int) -> None:
+    def delete(self, username: str, review_id: int) -> None:
         with self.db.cursor() as cursor:
-            cursor.execute(
-                "UPDATE Reviews SET deleted = 1 WHERE reviewID = %s AND deleted = 0;",
-                (review_id,),
-            )
-            self.db.commit()
+            try:
+                cursor.execute(
+                    "UPDATE Reviews SET deleted = 1 WHERE reviewID = %s AND deleted = 0;",
+                    (review_id,),
+                )
+                cursor.execute(
+                    "INSERT INTO reviews_log VALUES (%s, %s, %s)",
+                    (
+                        username,
+                        "Delete",
+                        f"Deleted review with id: {review_id}",
+                    ),
+                )
+                self.db.commit()
+            except mysql.connector.Error as error:
+                self.db.rollback()
+                raise RuntimeError("Couldn't delete review and rolled back: ", error)

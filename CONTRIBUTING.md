@@ -12,7 +12,7 @@
 ### Developing discord bot
 
 1. Clone repo
-2. Set up python virtual environment
+2. Set up python (version 3.11) virtual environment
 
 ```bash
 python3 -m venv venv          # create virtual environment just once

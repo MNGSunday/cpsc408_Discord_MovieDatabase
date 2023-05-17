@@ -25,7 +25,7 @@ class ExportCommands(commands.Cog):
             "reviews",
         ],
     )
-    async def list_command(self, ctx: discord.ApplicationContext, entity: str):
+    async def export(self, ctx: discord.ApplicationContext, entity: str):
         data = None
 
         if entity == "movies":

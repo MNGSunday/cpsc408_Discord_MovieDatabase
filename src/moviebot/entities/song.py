@@ -10,6 +10,7 @@ SongNamedTuple = typing.NamedTuple(
         ("movieID", int),
         ("songLength", int),
         ("ConnorsIncrediblyProfessionalAndPurelyObjectiveRating", str),
+        ("deleted", int),
     ],
 )
 
@@ -22,6 +23,7 @@ class Song:
     movie_id: int
     song_length: int
     connors_incredibly_professional_and_purely_objective_rating: str
+    deleted: bool
 
     @staticmethod
     def from_named_tuple(data: SongNamedTuple) -> "Song":
@@ -32,6 +34,7 @@ class Song:
             movie_id=data.movieID,
             song_length=data.songLength,
             connors_incredibly_professional_and_purely_objective_rating=data.ConnorsIncrediblyProfessionalAndPurelyObjectiveRating,
+            deleted=data.deleted == 1,
         )
 
     def to_tuple(self):
@@ -42,4 +45,5 @@ class Song:
             self.movie_id,
             self.song_length,
             self.connors_incredibly_professional_and_purely_objective_rating,
+            self.deleted,
         )

@@ -65,13 +65,14 @@ class SongsDAO:
     ) -> Song:
         with self.db.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO Songs (songName, composerID, movieID, songLength, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating) VALUES (%s, %s, %s, %s, %s);",
+                "INSERT INTO Songs (songName, composerID, movieID, songLength, ConnorsIncrediblyProfessionalAndPurelyObjectiveRating, deleted) VALUES (%s, %s, %s, %s, %s, %s);",
                 (
                     name,
                     composer_id,
                     movie_id,
                     length,
                     connors_incredibly_professional_and_purely_objective_rating,
+                    0,
                 ),
             )
             self.db.commit()
@@ -84,6 +85,7 @@ class SongsDAO:
                 movie_id=movie_id,
                 song_length=length,
                 connors_incredibly_professional_and_purely_objective_rating=connors_incredibly_professional_and_purely_objective_rating,
+                deleted=False,
             )
 
     def update(self, song_id: int, updated_values: dict) -> Song:

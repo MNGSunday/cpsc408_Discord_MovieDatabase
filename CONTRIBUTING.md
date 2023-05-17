@@ -40,7 +40,7 @@ the `.gitignore` file.
 4. Develop and test your changes
 
 ```bash
-python bot.py
+python src/bot.py
 ```
 
 5. Update `requirements.txt` if you installed new dependencies

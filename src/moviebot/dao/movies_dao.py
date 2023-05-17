@@ -32,7 +32,10 @@ class MoviesDAO:
 
     def get_by_id(self, movie_id: int) -> Movie | None:
         with self.db.cursor(named_tuple=True) as cursor:
-            cursor.execute("SELECT * FROM Movies WHERE movieID = %s;", (movie_id,))
+            cursor.execute(
+                "SELECT * FROM movies_with_director_composer_studio WHERE movieID = %s;",
+                (movie_id,),
+            )
             res = cursor.fetchone()
             if res is None:
                 return None
@@ -43,7 +46,8 @@ class MoviesDAO:
     def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Movie]:
         with self.db.cursor(named_tuple=True) as cursor:
             cursor.execute(
-                "SELECT * FROM Movies ORDER BY movieID LIMIT %s, %s;", (offset, limit)
+                "SELECT * FROM movies_with_director_composer_studio ORDER BY movieID LIMIT %s, %s;",
+                (offset, limit),
             )
             return PaginatedData[Movie](
                 data=[
@@ -95,22 +99,10 @@ class MoviesDAO:
             self.db.commit()
             if cursor.lastrowid is None:
                 raise ValueError("Couldn't fetch last inserted movie")
-            return Movie(
-                movie_id=cursor.lastrowid,
-                name=name,
-                director_id=director_id,
-                composer_id=composer_id,
-                studio_id=studio_id,
-                runtime=runtime,
-                budget=budget,
-                gross_profit=gross_profit,
-                critic_score=critic_score,
-                viewer_score=viewer_score,
-                genre=genre,
-                year=year,
-                nominated_for_award=nominated_for_award,
-                p_safe_rating=p_safe_rating,
-            )
+            movie = self.get_by_id(cursor.lastrowid)
+            if movie is None:
+                raise ValueError("Couldn't fetch last inserted movie")
+            return movie
 
     def update(self, movie_id: int, updated_values: dict) -> Movie:
         for key in updated_values.keys():

@@ -1,11 +1,15 @@
 from dataclasses import dataclass
 import typing
+from moviebot.entities.composer import Composer
+
+from moviebot.entities.director import Director
+from moviebot.entities.studio import Studio
 
 MovieNamedTuple = typing.NamedTuple(
     "MovieNamedTuple",
     [
         ("movieID", int),
-        ("name", str),
+        ("movieName", str),
         ("directorID", int),
         ("composerID", int),
         ("studioID", int),
@@ -18,6 +22,13 @@ MovieNamedTuple = typing.NamedTuple(
         ("year", int),
         ("nominatedForAward", bool),
         ("pSafeRating", str),
+        ("directorName", str),
+        ("directorAge", int),
+        ("composerName", str),
+        ("composerAge", int),
+        ("composerMovieCount", int),
+        ("studioName", str),
+        ("studioLocation", str),
     ],
 )
 
@@ -26,9 +37,9 @@ MovieNamedTuple = typing.NamedTuple(
 class Movie:
     movie_id: int
     name: str
-    director_id: int
-    composer_id: int
-    studio_id: int
+    director: Director
+    composer: Composer
+    studio: Studio
     runtime: int
     budget: int
     gross_profit: int
@@ -41,12 +52,31 @@ class Movie:
 
     @staticmethod
     def from_named_tuple(data: MovieNamedTuple) -> "Movie":
+        director = Director(
+            director_id=data.directorID,
+            name=data.directorName,
+            age=data.directorAge,
+        )
+
+        composer = Composer(
+            composer_id=data.composerID,
+            name=data.composerName,
+            age=data.composerAge,
+            movie_count=data.composerMovieCount,
+        )
+
+        studio = Studio(
+            studio_id=data.studioID,
+            name=data.studioName,
+            location=data.studioLocation,
+        )
+
         return Movie(
             movie_id=data.movieID,
-            name=data.name,
-            director_id=data.directorID,
-            composer_id=data.composerID,
-            studio_id=data.studioID,
+            name=data.movieName,
+            director=director,
+            composer=composer,
+            studio=studio,
             runtime=data.runtime,
             budget=data.budget,
             gross_profit=data.grossProfit,
@@ -62,9 +92,9 @@ class Movie:
         return (
             self.movie_id,
             self.name,
-            self.director_id,
-            self.composer_id,
-            self.studio_id,
+            self.director.director_id,
+            self.composer.composer_id,
+            self.studio.studio_id,
             self.runtime,
             self.budget,
             self.gross_profit,

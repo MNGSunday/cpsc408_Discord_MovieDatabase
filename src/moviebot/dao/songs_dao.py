@@ -100,3 +100,11 @@ class SongsDAO:
             if updated_song is None:
                 raise ValueError(f"Couldn't fetch updated song with id {song_id}")
             return updated_song
+
+    def delete(self, song_id: int) -> None:
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                "UPDATE Songs SET deleted = 1 WHERE songID = %s AND deleted = 0;",
+                (song_id,),
+            )
+            self.db.commit()

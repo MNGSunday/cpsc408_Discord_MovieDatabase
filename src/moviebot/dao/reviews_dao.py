@@ -78,3 +78,11 @@ class ReviewsDAO:
             if updated_review is None:
                 raise ValueError(f"Couldn't fetch updated review with id {review_id}")
             return updated_review
+
+    def delete(self, review_id: int) -> None:
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                "UPDATE Reviews SET deleted = 1 WHERE reviewID = %s AND deleted = 0;",
+                (review_id,),
+            )
+            self.db.commit()

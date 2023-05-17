@@ -1,5 +1,6 @@
 from moviebot.abstract_moviebot import AbstractMovieBot
 from moviebot.commands.create import CreateCommands
+from moviebot.commands.delete import DeleteCommands
 from moviebot.commands.get import GetCommands
 from moviebot.commands.list import ListCommands
 from moviebot.commands.update import UpdateCommands
@@ -16,6 +17,7 @@ class MovieBot(AbstractMovieBot):
             GetCommands(self),
             CreateCommands(self),
             UpdateCommands(self),
+            DeleteCommands(self),
         ]
         for cog in cogs:
             self.add_cog(cog)

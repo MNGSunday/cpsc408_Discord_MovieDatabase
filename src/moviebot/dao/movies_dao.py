@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
@@ -77,13 +77,42 @@ class MoviesDAO:
                 paginate=lambda _, limit: self.get_random_movies(limit),
             )
 
-    def get_movies_by_genre(
-        self, genre: str, offset: int = 0, limit: int = 5
+    def get_movies(
+        self,
+        genre: str = None,
+        min_budget: int = 0,
+        max_budget: int = 2147483647,
+        min_critic_score: int = 0,
+        max_critic_score: int = 100,
+        min_viewer_score: int = 0,
+        max_viewer_score: int = 100,
+        offset: int = 0,
+        limit: int = 5,
     ) -> PaginatedData[Movie]:
         with self.db.cursor(named_tuple=True) as cursor:
+            filters = [
+                "budget >= %s",
+                "budget <= %s",
+                "criticScore >= %s",
+                "criticScore <= %s",
+                "viewerScore >= %s",
+                "viewerScore <= %s",
+            ]
+            filter_values: List[Any] = [
+                min_budget,
+                max_budget,
+                min_critic_score,
+                max_critic_score,
+                min_viewer_score,
+                max_viewer_score,
+            ]
+            if genre is not None:
+                filters.append("genre = %s")
+                filter_values.append(genre)
+
             cursor.execute(
-                "SELECT COUNT(*) as total FROM movies_with_director_composer_studio WHERE genre = %s ORDER BY movieID;",
-                (genre,),
+                f"SELECT COUNT(*) as total FROM movies_with_director_composer_studio WHERE {' AND '.join(filters)} ORDER BY movieID;",
+                filter_values,
             )
             res = cursor.fetchone()
             if res is None:
@@ -91,8 +120,8 @@ class MoviesDAO:
             total = res.total
 
             cursor.execute(
-                "SELECT * FROM movies_with_director_composer_studio WHERE genre = %s ORDER BY movieID LIMIT %s;",
-                (genre, limit),
+                f"SELECT * FROM movies_with_director_composer_studio WHERE {' AND '.join(filters)} ORDER BY movieID;",
+                filter_values,
             )
             return PaginatedData[Movie](
                 data=[
@@ -102,7 +131,7 @@ class MoviesDAO:
                 offset=offset,
                 limit=limit,
                 total=total,
-                paginate=lambda _, limit: self.get_movies_by_genre(genre, limit),
+                paginate=lambda offset, limit: self.get_movies(genre, offset, limit),
             )
 
     def create(

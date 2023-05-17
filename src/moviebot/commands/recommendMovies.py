@@ -20,9 +20,28 @@ class RecommendMoviesCommands(commands.Cog):
         await paginated_table_view.send(ctx)
 
     @recommend_movies_commands.command(
-        name="by_genre", description="Get movies by genre"
+        name="by_filters", description="Get movies by filters"
     )
-    async def by_genre(self, ctx: discord.ApplicationContext, genre: str):
-        movies = self.bot.movies_dao.get_movies_by_genre(genre)
+    async def by_filters(
+        self,
+        ctx: discord.ApplicationContext,
+        genre: str = None,
+        min_budget: int = None,
+        max_budget: int = None,
+        min_critic_score: int = None,
+        max_critic_score: int = None,
+        min_viewer_score: int = None,
+        max_viewer_score: int = None,
+    ):
+        movies = self.bot.movies_dao.get_movies(
+            genre=genre,
+            min_budget=min_budget or 0,
+            max_budget=max_budget or 2147483647,
+            min_critic_score=min_critic_score or 0,
+            max_critic_score=max_critic_score or 100,
+            min_viewer_score=min_viewer_score or 0,
+            max_viewer_score=max_viewer_score or 100,
+        )
+
         paginated_table_view = PaginatedTableView(paginated_data=movies)
         await paginated_table_view.send(ctx)

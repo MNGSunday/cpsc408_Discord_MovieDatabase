@@ -1,8 +1,10 @@
+from typing import List
+
 from mysql.connector.abstracts import MySQLConnectionAbstract
 from mysql.connector.pooling import PooledMySQLConnection
 
 from moviebot.dao.paginated_data import PaginatedData
-from moviebot.entities.review import Review
+from moviebot.entities.review import Review, ReviewNamedTuple
 
 
 class ReviewsDAO:
@@ -16,6 +18,19 @@ class ReviewsDAO:
             if res is None:
                 raise ValueError("No count returned")
             return res[0]
+
+    def get_by_id(self, review_id: int) -> Review | None:
+        with self.db.cursor(named_tuple=True) as cursor:
+            cursor.execute(
+                "SELECT * FROM Reviews WHERE reviewID = %s AND deleted = 0;",
+                (review_id,),
+            )
+            res = cursor.fetchone()
+            if res is None:
+                return None
+
+            data = res[0] if isinstance(res, List) else res
+            return Review.from_named_tuple(ReviewNamedTuple(*data))
 
     def list(self, offset: int = 0, limit: int = 5) -> PaginatedData[Review]:
         with self.db.cursor(named_tuple=True) as cursor:

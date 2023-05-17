@@ -89,18 +89,11 @@ class SongsDAO:
                 deleted=False,
             )
 
-    def update(self, song_id: int, updated_values: dict) -> Song:
-        for key in updated_values.keys():
-            if key not in self.get_attributes():
-                raise ValueError(f"Invalid key {key}")
-
-        set_string = ", ".join([f"{key} = %s" for key in updated_values.keys()])
-        values = tuple(updated_values.values())
-
+    def update(self, song_id: int, new_song_length: int) -> Song:
         with self.db.cursor() as cursor:
             cursor.execute(
-                f"UPDATE Songs SET {set_string} WHERE songID = %s;",
-                values + (song_id,),
+                f"UPDATE Songs SET songLength = {new_song_length} WHERE songID = %s;",
+                (song_id,),
             )
             self.db.commit()
             updated_song = self.get_by_id(song_id)

@@ -15,27 +15,9 @@ class UpdateCommands(commands.Cog):
         self,
         ctx: discord.ApplicationContext,
         song_id: int,
-        name: str = None,
-        composer_id: int = None,
-        movie_id: int = None,
-        length: int = None,
-        connors_rating: str = None,
+        new_length: int,
     ):
-        updated_values = {}
-        if name is not None:
-            updated_values["songName"] = name
-        if composer_id is not None:
-            updated_values["composerID"] = composer_id
-        if movie_id is not None:
-            updated_values["movieID"] = movie_id
-        if length is not None:
-            updated_values["length"] = length
-        if connors_rating is not None:
-            updated_values[
-                "ConnorsIncrediblyProfessionalAndPurelyObjectiveRating "
-            ] = connors_rating
-
-        song = self.bot.songs_dao.update(song_id=song_id, updated_values=updated_values)
+        song = self.bot.songs_dao.update(song_id=song_id, new_song_length=new_length)
 
         composer = self.bot.composers_dao.get_by_id(song.composer_id)
         movie = self.bot.movies_dao.get_by_id(song.movie_id)

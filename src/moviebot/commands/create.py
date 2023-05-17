@@ -21,6 +21,7 @@ class CreateCommands(commands.Cog):
         connors_rating: str,
     ):
         song = self.bot.songs_dao.create(
+            username=ctx.author.name,
             name=name,
             composer_id=composer_id,
             movie_id=movie_id,

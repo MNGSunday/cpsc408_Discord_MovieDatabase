@@ -17,7 +17,9 @@ class UpdateCommands(commands.Cog):
         song_id: int,
         new_length: int,
     ):
-        song = self.bot.songs_dao.update(song_id=song_id, new_song_length=new_length)
+        song = self.bot.songs_dao.update(
+            username=ctx.author.name, song_id=song_id, new_song_length=new_length
+        )
 
         composer = self.bot.composers_dao.get_by_id(song.composer_id)
         movie = self.bot.movies_dao.get_by_id(song.movie_id)

@@ -16,7 +16,7 @@ class DeleteCommands(commands.Cog):
         ctx: discord.ApplicationContext,
         song_id: int,
     ):
-        self.bot.songs_dao.delete(song_id=song_id)
+        self.bot.songs_dao.delete(username=ctx.author.name, song_id=song_id)
 
         await ctx.response.send_message(
             f"Deleted song with id {song_id}", ephemeral=True

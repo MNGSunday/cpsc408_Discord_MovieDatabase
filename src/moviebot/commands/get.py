@@ -152,3 +152,26 @@ class GetCommands(commands.Cog):
         embed = discord.Embed(title=studio.name)
         embed.add_field(name="Location", value=str(studio.location))
         await ctx.response.send_message(embed=embed, ephemeral=True)
+
+    @get_entity_commands.command(name="review", description="Get a review given its id")
+    async def get_review(
+        self,
+        ctx: discord.ApplicationContext,
+        review_id: int,
+    ):
+        review = self.bot.reviews_dao.get_by_id(review_id)
+        if review is None:
+            await ctx.response.send_message(
+                f"Review with id `{review_id}` does not exist", ephemeral=True
+            )
+            return
+
+        movie = self.bot.movies_dao.get_by_id(review.movie_id)
+        if movie is None:
+            raise ValueError(f"Review has invalid movie foreign key")
+
+        embed = discord.Embed()
+        embed.add_field(name="Movie", value=movie.name, inline=False)
+        embed.add_field(name="Score", value=str(review.score), inline=False)
+        embed.add_field(name="Review", value=review.text, inline=False)
+        await ctx.response.send_message(embed=embed, ephemeral=True)

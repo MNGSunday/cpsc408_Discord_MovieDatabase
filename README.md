@@ -1,7 +1,7 @@
 # cpsc408_Discord_MovieDatabase
 ## Submission Info
 ### Group members:
-- Christopher Youn, Student ID:
+- Christopher Youn, Student ID: 2353270
 - Gabriel Garcia, Student ID:
 - Connor Martindale, Student ID: 2408897
 - Marc Domingo, Student ID: 2346778

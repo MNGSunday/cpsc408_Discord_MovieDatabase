@@ -2,7 +2,7 @@
 ## Submission Info
 ### Group members:
 - Christopher Youn, Student ID: 2353270
-- Gabriel Garcia, Student ID:
+- Gabriel Garcia, Student ID: 2344584
 - Connor Martindale, Student ID: 2408897
 - Marc Domingo, Student ID: 2346778
 ### Course Info:
